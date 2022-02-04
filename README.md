@@ -1,2 +1,2 @@
-# caleandar-server
+# cleandar-server
 여러 명의 사람이 약속 일정을 잡으려고 할 때 각자의 일정을 입력하면 최적의 일정을 골라주는 서비스

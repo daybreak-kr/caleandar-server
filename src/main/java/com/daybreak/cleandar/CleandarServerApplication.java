@@ -1,13 +1,13 @@
-package com.daybreak.caleandar;
+package com.daybreak.cleandar;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CaleandarServerApplication {
+public class CleandarServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CaleandarServerApplication.class, args);
+		SpringApplication.run(CleandarServerApplication.class, args);
 	}
 
 }

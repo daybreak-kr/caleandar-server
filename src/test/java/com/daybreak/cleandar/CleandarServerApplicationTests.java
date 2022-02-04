@@ -1,10 +1,10 @@
-package com.daybreak.caleandar;
+package com.daybreak.cleandar;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CaleandarServerApplicationTests {
+class CleandarServerApplicationTests {
 
 	@Test
 	void contextLoads() {
