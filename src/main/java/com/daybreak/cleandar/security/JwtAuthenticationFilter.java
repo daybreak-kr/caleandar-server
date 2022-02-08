@@ -1,5 +1,6 @@
 package com.daybreak.cleandar.security;
 
+import com.daybreak.cleandar.domain.user.User;
 import com.daybreak.cleandar.domain.user.UserDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,10 +20,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private final AuthenticationManager authenticationManager;
     private final JwtProperties jwtProperties;
+    private final ObjectMapper mapper;
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtProperties jwtProperties) {
         this.authenticationManager = authenticationManager;
         this.jwtProperties = jwtProperties;
+        this.mapper = new ObjectMapper();
     }
 
     /* Trigger when we issue POST request to /login
@@ -58,5 +61,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // Add token in response
         response.addHeader(jwtProperties.HEADER_STRING, jwtProperties.TOKEN_PREFIX + token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+
+        UserDto.Response user = new UserDto.Response(principal.getUser());
+        String json = mapper.writeValueAsString(user);
+        response.getWriter().write(json);
     }
 }
