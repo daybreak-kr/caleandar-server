@@ -1,10 +1,7 @@
 package com.daybreak.cleandar.domain.schedule;
 
 import com.daybreak.cleandar.domain.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,13 +11,20 @@ public class ScheduleDto {
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Getter
-    @Setter
     @NoArgsConstructor
     public static class Request{
         private String start;
         private String end;
         private String title;
         private String description;
+
+        @Builder
+        public Request(String start, String end, String title, String description){
+            this.start = start;
+            this.end = end;
+            this.title = title;
+            this.description = description;
+        }
 
         public Schedule toEntity(User user) {
             return Schedule.builder()
