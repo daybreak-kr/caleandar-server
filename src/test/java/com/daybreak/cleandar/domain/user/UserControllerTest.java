@@ -42,10 +42,11 @@ class UserControllerTest {
         String password = "qwer1234";
         String name = "example";
 
-        UserDto.Request request = new UserDto.Request();
-        request.setEmail(email);
-        request.setPassword(password);
-        request.setName(name);
+        UserDto.Request request = UserDto.Request.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .build();
 
         String content = objectMapper.writeValueAsString(request);
 
@@ -73,9 +74,11 @@ class UserControllerTest {
                 .name(name)
                 .build());
 
-        UserDto.Request request = new UserDto.Request();
-        request.setEmail(email);
-        request.setPassword(password);
+        UserDto.Request request = UserDto.Request.builder()
+                .email(email)
+                .password(password)
+                .name(name)
+                .build();
 
         String content = objectMapper.writeValueAsString(request);
 

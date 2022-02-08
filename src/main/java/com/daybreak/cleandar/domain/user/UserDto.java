@@ -1,18 +1,24 @@
 package com.daybreak.cleandar.domain.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 public class UserDto {
 
     @Getter
-    @Setter
+    @NoArgsConstructor
     public static class Request {
         private Long id;
         private String email;
         private String password;
         private String name;
+
+        @Builder
+        public Request(Long id, String email, String password, String name) {
+            this.id = id;
+            this.email = email;
+            this.password = password;
+            this.name = name;
+        }
     }
 
     @Getter
