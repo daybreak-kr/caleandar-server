@@ -1,5 +1,6 @@
 package com.daybreak.cleandar.domain.user;
 
+import com.daybreak.cleandar.domain.schedule.Schedule;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +10,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,6 +35,9 @@ public class User {
     private String password;
 
     private String name;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Schedule> schedules = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String name) {
