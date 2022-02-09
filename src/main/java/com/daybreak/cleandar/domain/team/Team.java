@@ -40,10 +40,12 @@ public class Team {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    //찾아볼내용, 테이블과 테이블 연결시(N:M)
     @OneToMany(mappedBy = "team")
     private List<TeamUser> teamUser = new ArrayList<>();
 
     //빌더
+    //@setter 사용 시 필드 값이 변경될 위험? >> Builder 객체 사용
     @Builder
     public Team(String name, String leader){
         this.name = name;
