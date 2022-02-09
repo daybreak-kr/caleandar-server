@@ -10,11 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 public class ScheduleServiceTest {
 
-    @Autowired
-    private ScheduleService scheduleService;
+    private final ScheduleService scheduleService;
+    private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    public ScheduleServiceTest(ScheduleService scheduleService, ScheduleRepository scheduleRepository, UserRepository userRepository) {
+        this.scheduleService = scheduleService;
+        this.scheduleRepository = scheduleRepository;
+        this.userRepository = userRepository;
+    }
+
 
     @BeforeEach
     void setUp(){
@@ -27,6 +33,12 @@ public class ScheduleServiceTest {
                 .password(pwd)
                 .name(name)
                 .build());
+    }
+
+    @AfterEach
+    void tearDown(){
+        scheduleRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
