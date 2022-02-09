@@ -3,7 +3,9 @@ package com.daybreak.cleandar.domain.schedule;
 import com.daybreak.cleandar.domain.user.User;
 import com.daybreak.cleandar.domain.user.UserRepository;
 import com.daybreak.cleandar.security.JwtProperties;
+import com.daybreak.cleandar.security.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +32,7 @@ public class ScheduleControllerTest {
     private String token;
 
     @Autowired
-    public ScheduleControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, ScheduleService scheduleService, UserRepository userRepository, JwtProperties jwtProperties) {
+    public ScheduleControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, UserRepository userRepository, JwtProperties jwtProperties) {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
         this.userRepository = userRepository;
@@ -53,6 +55,11 @@ public class ScheduleControllerTest {
                 .build());
     }
 
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+    }
+
 
     @Test
     @Transactional
@@ -61,25 +68,25 @@ public class ScheduleControllerTest {
 
         String title = "TEST";
         String description = "This is Test";
+        String start = "2020-10-11 13:00";
 
         ScheduleDto.Request request = ScheduleDto.Request.builder()
-                .start("2020-10-11 13:00")
+                .start(start)
                 .end("2020-11-11 14:00")
                 .title(title)
                 .description(description)
                 .build();
 
         String content = objectMapper.writeValueAsString(request);
-        User user = userRepository.findUserByEmail("dev.test@gmail.com");
 
         mockMvc.perform(post("/schedules")
                         .content(content)
-                        .param("email", "dev.test@gmail.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andDo(print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.start").value(start))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(title))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(description));
     }

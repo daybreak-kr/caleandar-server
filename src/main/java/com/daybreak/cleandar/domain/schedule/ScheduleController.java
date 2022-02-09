@@ -1,6 +1,5 @@
 package com.daybreak.cleandar.domain.schedule;
 
-import com.daybreak.cleandar.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
