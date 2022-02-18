@@ -1,14 +1,12 @@
 package com.daybreak.cleandar.security;
 
 import com.daybreak.cleandar.domain.user.User;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-@Data
 @RequiredArgsConstructor
 public class UserPrincipal implements UserDetails {
 
