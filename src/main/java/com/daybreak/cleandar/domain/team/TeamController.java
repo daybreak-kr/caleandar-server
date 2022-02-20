@@ -17,11 +17,17 @@ public class TeamController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     //json >> java Object
-    public TeamDto.Response createTeam(@RequestBody TeamDto.Request request){
+    public TeamDto.Response createTeam(@RequestBody TeamDto.Request request) {
 
         Team team = teamService.createTeam(request);
 
         return new TeamDto.Response(team);
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public TeamDto.Response updateTeam(Team team, @RequestBody TeamDto.Request request){
+        return teamService.updateTeam(request);
     }
 
 }

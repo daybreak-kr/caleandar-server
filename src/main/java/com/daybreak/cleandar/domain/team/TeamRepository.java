@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 //JpaRepository<사용될 EntityClass,ID>
 public interface TeamRepository  extends JpaRepository<Team, Long> {
 
+    Team findTeamByName(String name, String leader);
+
 }

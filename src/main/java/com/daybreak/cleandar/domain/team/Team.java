@@ -50,7 +50,10 @@ public class Team {
     public Team(String name, String leader){
         this.name = name;
         this.leader = leader;
+    }
 
+    public void updateTeam(String name){
+        this.name = name;
     }
 
 }
