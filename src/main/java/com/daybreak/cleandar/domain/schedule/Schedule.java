@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter
@@ -49,5 +50,14 @@ public class Schedule {
         this.description = description;
         this.user = user;
         this.user.getSchedules().add(this);
+    }
+
+    public void update(ScheduleDto.Request request) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+        this.start = LocalDateTime.parse(request.getStart(), formatter);
+        this.end = LocalDateTime.parse(request.getEnd(), formatter);
+        this.title = request.getTitle();
+        this.description = request.getDescription();
     }
 }

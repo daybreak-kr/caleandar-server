@@ -5,6 +5,9 @@ import com.daybreak.cleandar.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
@@ -12,10 +15,44 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
 
-    public Schedule addSchedule(String email, ScheduleDto.Request request) {
-        User user = userRepository.findUserByEmail(email);
-        Schedule schedule = request.toEntity(user);
-        return scheduleRepository.save(schedule);
+    public Schedule create(String email, ScheduleDto.Request request) {
+            User user = userRepository.findUserByEmail(email);
+            Schedule schedule = request.toEntity(user);
+            return scheduleRepository.save(schedule);
+    }
+
+    public boolean delete(String email, Long id) {
+
+        if(isAccessPossibleUser(email, id)){
+            scheduleRepository.deleteById(id);
+        }
+        return !scheduleRepository.existsById(id);
+    }
+
+    private boolean isAccessPossibleUser(String email, Long id) {
+        return email.equals(scheduleRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new).getUser().getEmail());
+    }
+
+    public Schedule update(String email, ScheduleDto.Request request) {
+
+        if(isAccessPossibleUser(email, request.getId())){
+            Schedule schedule = scheduleRepository.findById(request.getId())
+                    .orElseThrow(IllegalArgumentException::new);
+            schedule.update(request);
+            return scheduleRepository.save(schedule);
+        }
+        return null;
+    }
+
+    public List<ScheduleDto.Response> getAll(String email) {
+        List<ScheduleDto.Response> list = new ArrayList<>();
+        for(Schedule schedule : userRepository.findUserByEmail(email).getSchedules()){
+            list.add(new ScheduleDto.Response(schedule));
+        }
+
+
+        return list;
     }
 
 }

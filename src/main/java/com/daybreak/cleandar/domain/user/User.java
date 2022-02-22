@@ -36,7 +36,7 @@ public class User {
 
     private String name;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<Schedule> schedules = new ArrayList<>();
 
     @Builder
@@ -45,4 +45,5 @@ public class User {
         this.password = password;
         this.name = name;
     }
+
 }
