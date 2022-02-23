@@ -17,4 +17,9 @@ public class UserService {
                 .name(request.getName())
                 .build());
     }
+
+    public UserDto.Response update(User user, UserDto.Request request) {
+        user.updateName(request.getName());
+        return new UserDto.Response(userRepository.save(user));
+    }
 }
