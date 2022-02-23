@@ -16,14 +16,14 @@ public class ScheduleService {
     private final UserRepository userRepository;
 
     public Schedule create(String email, ScheduleDto.Request request) {
-            User user = userRepository.findUserByEmail(email);
-            Schedule schedule = request.toEntity(user);
-            return scheduleRepository.save(schedule);
+        User user = userRepository.findUserByEmail(email);
+        Schedule schedule = request.toEntity(user);
+        return scheduleRepository.save(schedule);
     }
 
     public boolean delete(String email, Long id) {
 
-        if(isAccessPossibleUser(email, id)){
+        if (isAccessPossibleUser(email, id)) {
             scheduleRepository.deleteById(id);
         }
         return !scheduleRepository.existsById(id);
@@ -36,7 +36,7 @@ public class ScheduleService {
 
     public Schedule update(String email, ScheduleDto.Request request) {
 
-        if(isAccessPossibleUser(email, request.getId())){
+        if (isAccessPossibleUser(email, request.getId())) {
             Schedule schedule = scheduleRepository.findById(request.getId())
                     .orElseThrow(IllegalArgumentException::new);
             schedule.update(request);
@@ -45,14 +45,11 @@ public class ScheduleService {
         return null;
     }
 
-    public List<ScheduleDto.Response> getAll(String email) {
-        List<ScheduleDto.Response> list = new ArrayList<>();
-        for(Schedule schedule : userRepository.findUserByEmail(email).getSchedules()){
-            list.add(new ScheduleDto.Response(schedule));
-        }
-
-
-        return list;
+    public List<Schedule> getAll(String email) {
+        return userRepository.findUserByEmail(email).getSchedules();
     }
 
+    public Schedule getOne(Long id) {
+        return scheduleRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    }
 }

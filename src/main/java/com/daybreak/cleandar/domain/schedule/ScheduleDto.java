@@ -13,7 +13,7 @@ public class ScheduleDto {
 
     @Getter
     @NoArgsConstructor
-    public static class Request{
+    public static class Request {
         private Long id;
         private String start;
         private String end;
@@ -21,7 +21,7 @@ public class ScheduleDto {
         private String description;
 
         @Builder
-        public Request(Long id, String start, String end, String title, String description){
+        public Request(Long id, String start, String end, String title, String description) {
             this.id = id;
             this.start = start;
             this.end = end;
@@ -46,13 +46,17 @@ public class ScheduleDto {
         private Long id;
         private String start;
         private String end;
+        private String createAt;
+        private String updateAt;
         private String title;
         private String description;
 
-        public Response(Schedule schedule){
+        public Response(Schedule schedule) {
             id = schedule.getId();
             start = String.valueOf(schedule.getStart()).replace('T', ' ');
             end = String.valueOf(schedule.getEnd()).replace('T', ' ');
+            createAt = String.valueOf(schedule.getCreatedAt()).replace('T', ' ');
+            updateAt = String.valueOf(schedule.getUpdatedAt()).replace('T', ' ');
             title = schedule.getTitle();
             description = schedule.getDescription();
         }

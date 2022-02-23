@@ -43,7 +43,7 @@ public class Schedule {
     @Builder
     public Schedule(LocalDateTime start, LocalDateTime end,
                     String title, String description,
-                    User user){
+                    User user) {
         this.start = start;
         this.end = end;
         this.title = title;

@@ -18,6 +18,9 @@ public class ScheduleServiceTest {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
 
+    private Schedule schedule;
+    private ScheduleDto.Request request;
+
     @Autowired
     public ScheduleServiceTest(ScheduleService scheduleService, ScheduleRepository scheduleRepository, UserRepository userRepository) {
         this.scheduleService = scheduleService;
@@ -27,7 +30,7 @@ public class ScheduleServiceTest {
 
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         String email = "dev.test@gmail.com";
         String pwd = "1234";
         String name = "Kim";
@@ -37,10 +40,20 @@ public class ScheduleServiceTest {
                 .password(pwd)
                 .name(name)
                 .build());
+
+        request = ScheduleDto.Request.builder()
+                .start("2020-10-11 13:00")
+                .end("2020-11-11 14:00")
+                .title("TEST")
+                .description("This is Test").build();
+
+        schedule = scheduleService.create("dev.test@gmail.com", request);
+
+
     }
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         scheduleRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -50,15 +63,7 @@ public class ScheduleServiceTest {
     @DisplayName("일정 생성")
     public void addSchedule() {
 
-        ScheduleDto.Request request = ScheduleDto.Request.builder()
-                .start("2020-10-11 13:00")
-                .end("2020-11-11 14:00")
-                .title("TEST")
-                .description("This is Test").build();
-
         User user = userRepository.findUserByEmail("dev.test@gmail.com");
-        Schedule schedule = scheduleService.create("dev.test@gmail.com", request);
-
 
         Assertions.assertNotNull(schedule.getId());
         Assertions.assertEquals(request.getTitle(), schedule.getTitle());
@@ -70,13 +75,6 @@ public class ScheduleServiceTest {
     @Transactional
     @DisplayName("일정 삭제")
     public void delete() {
-        ScheduleDto.Request request = ScheduleDto.Request.builder()
-                .start("2020-10-11 13:00")
-                .end("2020-11-11 14:00")
-                .title("TEST")
-                .description("This is Test").build();
-
-        Schedule schedule = scheduleService.create("dev.test@gmail.com", request);
 
         scheduleService.delete("dev.test@gmail.com", schedule.getId());
 
@@ -87,14 +85,6 @@ public class ScheduleServiceTest {
     @Transactional
     @DisplayName("일정 수정")
     public void update() {
-        //일정 생성
-        ScheduleDto.Request request = ScheduleDto.Request.builder()
-                .start("2020-10-11 13:00")
-                .end("2020-11-11 14:00")
-                .title("TEST")
-                .description("This is Test").build();
-
-        Schedule schedule = scheduleService.create("dev.test@gmail.com", request);
 
         //수정
         String newTitle = "NEW TEST";
@@ -121,15 +111,8 @@ public class ScheduleServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("일정 조회")
+    @DisplayName("일정 전체 조회")
     public void getAll() {
-        ScheduleDto.Request request1 = ScheduleDto.Request.builder()
-                .start("2020-10-11 13:00")
-                .end("2020-11-11 14:00")
-                .title("TEST")
-                .description("This is Test").build();
-
-        ScheduleDto.Response schedule1 = new ScheduleDto.Response(scheduleService.create("dev.test@gmail.com", request1));
 
         ScheduleDto.Request request2 = ScheduleDto.Request.builder()
                 .start("2022-12-12 13:00")
@@ -137,12 +120,22 @@ public class ScheduleServiceTest {
                 .title("newTitle")
                 .description("newDescription").build();
 
-        ScheduleDto.Response schedule2 = new ScheduleDto.Response(scheduleService.create("dev.test@gmail.com", request2));
+        Schedule schedule2 = scheduleService.create("dev.test@gmail.com", request2);
 
-        List<ScheduleDto.Response> list = scheduleService.getAll("dev.test@gmail.com");
+        List<Schedule> list = scheduleService.getAll("dev.test@gmail.com");
 
         Assertions.assertEquals(2, list.size());
-        Assertions.assertEquals(list.get(0).getId(), schedule1.getId());
+        Assertions.assertEquals(list.get(0).getId(), schedule.getId());
         Assertions.assertEquals(list.get(1).getId(), schedule2.getId());
     }
+
+    @Test
+    @Transactional
+    @DisplayName("일정 조회")
+    public void getOne() {
+        Schedule selectSchedule = scheduleService.getOne(schedule.getId());
+
+        Assertions.assertEquals(selectSchedule, schedule);
+    }
+
 }

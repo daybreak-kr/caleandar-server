@@ -14,12 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.format.DateTimeFormatter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -36,6 +33,7 @@ public class ScheduleControllerTest {
 
     private String token;
     private ScheduleDto.Request request;
+    private Schedule schedule;
 
     @Autowired
     public ScheduleControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, UserRepository userRepository, JwtProperties jwtProperties, ScheduleService scheduleService) {
@@ -48,7 +46,7 @@ public class ScheduleControllerTest {
 
 
     @BeforeEach
-    void setUser(){
+    void setUser() {
         String email = "dev.test@gmail.com";
         String pwd = "1234";
         String name = "Kim";
@@ -71,6 +69,8 @@ public class ScheduleControllerTest {
                 .title(title)
                 .description(description)
                 .build();
+
+        schedule = scheduleService.create("dev.test@gmail.com", request);
     }
 
     @AfterEach
@@ -103,11 +103,6 @@ public class ScheduleControllerTest {
     @DisplayName("DELETE /schedules")
     public void delete() throws Exception {
 
-        Schedule schedule = scheduleService.create("dev.test@gmail.com", request);
-
-        String content = objectMapper.writeValueAsString(schedule.getId());
-        System.out.println(schedule.getId());
-
         // 다른 유저가 삭제
         userRepository.save(User.builder()
                 .email("fake.test@gmail.com")
@@ -119,14 +114,14 @@ public class ScheduleControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/schedules/{id}", schedule.getId())
                         .header("Authorization", jwtProperties.TOKEN_PREFIX + fakeToken))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.content().string("false"));
 
         // 일정을 작성한 유저가 삭제
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/schedules/{id}", schedule.getId())
                         .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.content().string("true"));
     }
@@ -135,9 +130,6 @@ public class ScheduleControllerTest {
     @Transactional
     @DisplayName("PUT /schedules")
     public void update() throws Exception {
-
-        // 일정 저장
-        Schedule schedule = scheduleService.create("dev.test@gmail.com", request);
 
         // 수정할 내용
         String newTitle = "NEW TEST";
@@ -155,31 +147,23 @@ public class ScheduleControllerTest {
 
         String content = objectMapper.writeValueAsString(updateRequest);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
         mockMvc.perform(put("/api/schedules/{id}", schedule.getId())
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.start").value(newStartTime))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(newTitle))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(newDescription));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(newDescription))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.updateAt").exists());
     }
 
     @Test
     @Transactional
     @DisplayName("GET /schedules")
     public void getAll() throws Exception {
-        ScheduleDto.Request request1 = ScheduleDto.Request.builder()
-                .start("2020-10-11 13:00")
-                .end("2020-11-11 14:00")
-                .title("TEST")
-                .description("This is Test").build();
-
-        Schedule schedule1 = scheduleService.create("dev.test@gmail.com", request1);
 
         ScheduleDto.Request request2 = ScheduleDto.Request.builder()
                 .start("2022-12-12 13:00")
@@ -187,13 +171,27 @@ public class ScheduleControllerTest {
                 .title("newTitle")
                 .description("newDescription").build();
 
-        Schedule schedule2 = scheduleService.create("dev.test@gmail.com", request2);
+        scheduleService.create("dev.test@gmail.com", request2);
 
         mockMvc.perform(get("/api/schedules")
                         .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0]").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1]").exists());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("GET /schedules/{id}")
+    public void getOne() throws Exception {
+
+        mockMvc.perform(get("/api/schedules/{id}", schedule.getId())
+                        .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.start").value(String.valueOf(schedule.getStart()).replace('T', ' ')))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(schedule.getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(schedule.getDescription()));
     }
 }
