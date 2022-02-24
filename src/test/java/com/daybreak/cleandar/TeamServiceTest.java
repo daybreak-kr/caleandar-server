@@ -4,12 +4,10 @@ import com.daybreak.cleandar.domain.team.Team;
 import com.daybreak.cleandar.domain.team.TeamDto;
 import com.daybreak.cleandar.domain.team.TeamRepository;
 import com.daybreak.cleandar.domain.team.TeamService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
 
 @SpringBootTest
@@ -50,17 +48,17 @@ class TeamServiceTest {
         String name = "team1";
         String leader = "ejw";
 
-        Optional<Team> team = Optional.ofNullable(teamRepository.findTeamByName(name, leader));
+        String changeName = "team3";
 
-        System.out.println(team);
+        Optional<Team> team = teamRepository.findByNameAndLeader(name, leader);
 
-
+        //현재 에러남
         /*team.ifPresent(selectTeam->{
-            selectTeam.builder()
-                    .name("team3")
-                    .leader("ejw");
-            teamRepository.save(selectTeam);
+            TeamDto.Request request = TeamDto.Request.builder()
+                    .name(name)
+                    .leader(leader)
+                    .build();
+            TeamDto.Response updateTeam = teamService.updateTeam(request);
         });*/
-
     }
 }

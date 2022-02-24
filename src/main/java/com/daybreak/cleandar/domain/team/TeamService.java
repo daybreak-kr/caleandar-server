@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 //비지니스 로직
 @Service
@@ -22,12 +23,13 @@ public class TeamService {
     }
 
     //팀 수정(이름)
-    @Transactional
+    //@Transactional
     public TeamDto.Response updateTeam(@RequestBody TeamDto.Request request) {
-        Team team = teamRepository.findTeamByName(request.getName(), request.getLeader());
 
-        String name = request.getName();
-        team.updateTeam(name);
+        Team team =teamRepository.findByNameAndLeader(request.getName(), request.getLeader()).orElseThrow(() ->
+                new IllegalArgumentException("해당 되는 조건이 없습니다."));
+
+        team.updateTeam(request.getName());
 
         return new TeamDto.Response(teamRepository.save(team));
     }
