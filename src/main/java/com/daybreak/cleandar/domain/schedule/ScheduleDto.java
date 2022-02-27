@@ -53,10 +53,10 @@ public class ScheduleDto {
 
         public Response(Schedule schedule) {
             id = schedule.getId();
-            start = schedule.getStart().toString().replace('T', ' ');
-            end = schedule.getEnd().toString().replace('T', ' ');
-            createAt = schedule.getCreatedAt().toString().replace('T', ' ');
-            updateAt = schedule.getUpdatedAt().toString().replace('T', ' ');
+            start = schedule.getStart().format(formatter);
+            end = schedule.getEnd().format(formatter);
+            createAt = schedule.getCreatedAt().format(formatter);
+            updateAt = schedule.getUpdatedAt().format(formatter);
             title = schedule.getTitle();
             description = schedule.getDescription();
         }
