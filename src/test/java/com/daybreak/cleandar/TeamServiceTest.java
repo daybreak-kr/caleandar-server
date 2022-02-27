@@ -45,20 +45,23 @@ class TeamServiceTest {
 
     @Test
     void update(){
-        String name = "team1";
+        String name = "team5";
         String leader = "ejw";
-
         String changeName = "team3";
 
-        Optional<Team> team = teamRepository.findByNameAndLeader(name, leader);
+        TeamDto.Request request = TeamDto.Request.builder()
+                .name(name)
+                .leader(leader)
+                .build();
 
-        //현재 에러남
-        /*team.ifPresent(selectTeam->{
-            TeamDto.Request request = TeamDto.Request.builder()
-                    .name(name)
-                    .leader(leader)
+        Optional<Team> team = teamService.findByNameAndLeader(request);
+
+        team.ifPresent(selectTeam->{
+           TeamDto.Request changeRequest = TeamDto.Request.builder()
+                    .name(changeName)
                     .build();
-            TeamDto.Response updateTeam = teamService.updateTeam(request);
-        });*/
+           //update 에러
+            teamService.updateTeam(changeRequest);
+        });
     }
 }
