@@ -1,5 +1,6 @@
 package com.daybreak.cleandar.domain.user;
 
+import com.daybreak.cleandar.domain.schedule.Schedule;
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +37,9 @@ public class User {
 
     private String name;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Schedule> schedules = new ArrayList<>();
+
     //찾아볼내용 테이블과 테이블 연결시(N:M)
     @OneToMany(mappedBy = "user")
     private List<TeamUser> teamUser = new ArrayList<>();
@@ -43,6 +48,10 @@ public class User {
     public User(String email, String password, String name) {
         this.email = email;
         this.password = password;
+        this.name = name;
+    }
+
+    public void updateName(String name) {
         this.name = name;
     }
 }
