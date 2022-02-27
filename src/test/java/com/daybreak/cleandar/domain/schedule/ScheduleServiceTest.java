@@ -20,6 +20,7 @@ public class ScheduleServiceTest {
 
     private Schedule schedule;
     private ScheduleDto.Request request;
+    private User user;
 
     @Autowired
     public ScheduleServiceTest(ScheduleService scheduleService, ScheduleRepository scheduleRepository, UserRepository userRepository) {
@@ -35,7 +36,7 @@ public class ScheduleServiceTest {
         String pwd = "1234";
         String name = "Kim";
 
-        userRepository.save(User.builder()
+        user = userRepository.save(User.builder()
                 .email(email)
                 .password(pwd)
                 .name(name)
@@ -47,7 +48,7 @@ public class ScheduleServiceTest {
                 .title("TEST")
                 .description("This is Test").build();
 
-        schedule = scheduleService.create("dev.test@gmail.com", request);
+        schedule = scheduleService.create(user, request);
 
 
     }
@@ -62,8 +63,6 @@ public class ScheduleServiceTest {
     @Transactional
     @DisplayName("일정 생성")
     public void addSchedule() {
-
-        User user = userRepository.findUserByEmail("dev.test@gmail.com");
 
         Assertions.assertNotNull(schedule.getId());
         Assertions.assertEquals(request.getTitle(), schedule.getTitle());
@@ -120,7 +119,7 @@ public class ScheduleServiceTest {
                 .title("newTitle")
                 .description("newDescription").build();
 
-        Schedule schedule2 = scheduleService.create("dev.test@gmail.com", request2);
+        Schedule schedule2 = scheduleService.create(user, request2);
 
         List<Schedule> list = scheduleService.getAll("dev.test@gmail.com");
 

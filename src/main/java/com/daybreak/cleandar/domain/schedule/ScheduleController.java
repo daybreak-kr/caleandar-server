@@ -20,7 +20,7 @@ public class ScheduleController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ScheduleDto.Response createSchedule(@AuthenticationPrincipal UserPrincipal principal, @RequestBody ScheduleDto.Request request) {
-        Schedule schedule = scheduleService.create(principal.getUsername(), request);
+        Schedule schedule = scheduleService.create(principal.getUser(), request);
         return new ScheduleDto.Response(schedule);
     }
 

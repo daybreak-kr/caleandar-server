@@ -34,6 +34,7 @@ public class ScheduleControllerTest {
     private String token;
     private ScheduleDto.Request request;
     private Schedule schedule;
+    private User user;
 
     @Autowired
     public ScheduleControllerTest(MockMvc mockMvc, ObjectMapper objectMapper, UserRepository userRepository, JwtProperties jwtProperties, ScheduleService scheduleService) {
@@ -53,7 +54,7 @@ public class ScheduleControllerTest {
 
         token = jwtProperties.createToken(email);
 
-        userRepository.save(User.builder()
+        user = userRepository.save(User.builder()
                 .email(email)
                 .password(new BCryptPasswordEncoder().encode(pwd))
                 .name(name)
@@ -62,15 +63,16 @@ public class ScheduleControllerTest {
         String title = "TEST";
         String description = "This is Test";
         String start = "2020-10-11 13:00";
+        String end = "2020-10-12 13:00";
 
         request = ScheduleDto.Request.builder()
                 .start(start)
-                .end("2020-11-11 14:00")
+                .end(end)
                 .title(title)
                 .description(description)
                 .build();
 
-        schedule = scheduleService.create("dev.test@gmail.com", request);
+        schedule = scheduleService.create(user, request);
     }
 
     @AfterEach
@@ -131,6 +133,7 @@ public class ScheduleControllerTest {
     @DisplayName("PUT /schedules")
     public void update() throws Exception {
 
+
         // 수정할 내용
         String newTitle = "NEW TEST";
         String newStartTime = "2022-02-22 13:00";
@@ -171,7 +174,7 @@ public class ScheduleControllerTest {
                 .title("newTitle")
                 .description("newDescription").build();
 
-        scheduleService.create("dev.test@gmail.com", request2);
+        scheduleService.create(user, request2);
 
         mockMvc.perform(get("/api/schedules")
                         .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
@@ -190,7 +193,7 @@ public class ScheduleControllerTest {
                         .header("Authorization", jwtProperties.TOKEN_PREFIX + token))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.start").value(String.valueOf(schedule.getStart()).replace('T', ' ')))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.start").value(schedule.getStart().toString().replace('T', ' ')))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(schedule.getTitle()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(schedule.getDescription()));
     }

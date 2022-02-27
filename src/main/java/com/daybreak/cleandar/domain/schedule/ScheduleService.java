@@ -5,7 +5,6 @@ import com.daybreak.cleandar.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,8 +14,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
 
-    public Schedule create(String email, ScheduleDto.Request request) {
-        User user = userRepository.findUserByEmail(email);
+    public Schedule create(User user, ScheduleDto.Request request) {
         Schedule schedule = request.toEntity(user);
         return scheduleRepository.save(schedule);
     }

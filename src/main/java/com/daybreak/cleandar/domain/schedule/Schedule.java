@@ -1,6 +1,7 @@
 package com.daybreak.cleandar.domain.schedule;
 
 import com.daybreak.cleandar.domain.user.User;
+import com.sun.istack.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,8 +28,10 @@ public class Schedule {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @NotNull
     private LocalDateTime start;
 
+    @NotNull
     private LocalDateTime end;
 
     private String title;
