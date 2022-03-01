@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class ScheduleDto {
 
@@ -12,14 +13,16 @@ public class ScheduleDto {
 
     @Getter
     @NoArgsConstructor
-    public static class Request{
+    public static class Request {
+        private Long id;
         private String start;
         private String end;
         private String title;
         private String description;
 
         @Builder
-        public Request(String start, String end, String title, String description){
+        public Request(Long id, String start, String end, String title, String description) {
+            this.id = id;
             this.start = start;
             this.end = end;
             this.title = title;
@@ -43,15 +46,20 @@ public class ScheduleDto {
         private Long id;
         private String start;
         private String end;
+        private String createAt;
+        private String updateAt;
         private String title;
         private String description;
 
-        public Response(Schedule schedule){
+        public Response(Schedule schedule) {
             id = schedule.getId();
             start = schedule.getStart().format(formatter);
             end = schedule.getEnd().format(formatter);
+            createAt = schedule.getCreatedAt().format(formatter);
+            updateAt = schedule.getUpdatedAt().format(formatter);
             title = schedule.getTitle();
             description = schedule.getDescription();
         }
+
     }
 }
