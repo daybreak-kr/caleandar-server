@@ -21,7 +21,6 @@ public class TeamDto {
     }
 
     @Getter
-    //생성자 자동으로 생성
     @AllArgsConstructor
     public static class Response{
         private Long id;
