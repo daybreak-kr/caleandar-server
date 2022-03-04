@@ -61,5 +61,10 @@ public class ScheduleDto {
             description = schedule.getDescription();
         }
 
+        public Response(String start, String end) {
+            this.start = start;
+            this.end = end;
+        }
+
     }
 }
