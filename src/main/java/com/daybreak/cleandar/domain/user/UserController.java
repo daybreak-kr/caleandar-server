@@ -1,9 +1,7 @@
 package com.daybreak.cleandar.domain.user;
 
-import com.daybreak.cleandar.security.UserPrincipal;
 import com.daybreak.cleandar.security.UserPrincipalDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,8 +15,9 @@ public class UserController {
     private final UserPrincipalDetailsService userService;
 
     @GetMapping("/login")
-    public String loginForm() {
-        return "users/login";
+    public ModelAndView loginForm() {
+        ModelAndView mav = new ModelAndView("users/login");
+        return mav;
     }
 
     @GetMapping("/register")

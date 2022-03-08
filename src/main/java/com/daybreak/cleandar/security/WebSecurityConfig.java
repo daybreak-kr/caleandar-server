@@ -26,14 +26,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/register").permitAll()
+                .antMatchers("/", "/register").permitAll()
                 .antMatchers("/**").authenticated()
                 .and()
-                .formLogin().loginPage("/login").failureUrl("/login-error").defaultSuccessUrl("/").usernameParameter("email").permitAll()
+                .formLogin().loginPage("/login").usernameParameter("email").permitAll()
                 .and()
-                .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).invalidateHttpSession(true).permitAll()
-                .logoutSuccessUrl("/");
+                .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/").invalidateHttpSession(true).permitAll();
     }
 
     @Bean

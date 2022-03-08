@@ -27,6 +27,9 @@ public class UserPrincipalDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findUserByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("Not Found");
+        }
         return new UserPrincipal(user);
     }
 
