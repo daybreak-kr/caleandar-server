@@ -44,6 +44,7 @@ public class ScheduleDto {
     @AllArgsConstructor
     public static class Response {
         private Long id;
+        private Long teamId;
         private String start;
         private String end;
         private String createAt;
@@ -62,6 +63,12 @@ public class ScheduleDto {
         }
 
         public Response(String start, String end) {
+            this.start = start;
+            this.end = end;
+        }
+
+        public Response(Long teamId, String start, String end) {
+            this.teamId = teamId;
             this.start = start;
             this.end = end;
         }

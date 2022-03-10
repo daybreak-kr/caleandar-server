@@ -1,5 +1,7 @@
 package com.daybreak.cleandar.domain.schedule;
 
+import com.daybreak.cleandar.domain.team.Team;
+import com.daybreak.cleandar.domain.team.TeamRepository;
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
 import com.daybreak.cleandar.domain.user.User;
 import com.daybreak.cleandar.domain.user.UserRepository;
@@ -17,6 +19,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
 
     public Schedule create(User user, ScheduleDto.Request request) {
         Schedule schedule = request.toEntity(user);
@@ -55,10 +58,12 @@ public class ScheduleService {
         return scheduleRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
-    public List<ScheduleDto.Response> getCandidateSchedules(LocalDateTime startDate, LocalDateTime endDate, List<TeamUser> teamUser) {
+    public List<ScheduleDto.Response> getCandidateSchedules(LocalDateTime startDate, LocalDateTime endDate, Long teamId) {
 
         List<ScheduleDto.Response> candidate = new ArrayList<>();
         List<ScheduleDto.Response> teamSchedules = new ArrayList<>();
+
+        List<TeamUser> teamUser = teamRepository.findById(teamId).get().getTeamUser();
 
         for (TeamUser member : teamUser) {
             for (Schedule schedule : member.getUser().getSchedules()) {
@@ -91,5 +96,16 @@ public class ScheduleService {
         }
 
         return teamSchedules;
+    }
+
+    public ScheduleDto.Response createTeamSchedule(User user, ScheduleDto.Request request, Long teamId) {
+
+        Team team = teamRepository.getById(teamId);
+        if (user.getName().equals(team.getLeader())) { // TeamUser에서 leader의 type을 User로 바꾼다면 변경할 부분.
+            for (TeamUser member : team.getTeamUser()) {
+                create(member.getUser(), request);
+            }
+        }
+        return new ScheduleDto.Response(teamId, request.getStart(), request.getEnd());
     }
 }

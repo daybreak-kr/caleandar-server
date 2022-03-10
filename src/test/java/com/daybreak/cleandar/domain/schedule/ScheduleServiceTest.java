@@ -145,8 +145,34 @@ public class ScheduleServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("팀 일정 결정")
+    @DisplayName("팀 일정 생성")
     public void makeAppointment() {
+        String email = "Ahn.test@gmail.com";
+        String pwd = "0301";
+        String name = "Ahn Thomas";
+
+        User newUser = userRepository.save(User.builder()
+                .email(email)
+                .password(pwd)
+                .name(name)
+                .build());
+
+        ScheduleDto.Request teamShedule = ScheduleDto.Request.builder()
+                .start("2022-10-11 13:00")
+                .end("2022-10-11 16:00")
+                .title("Team Schedule")
+                .description("This is Test").build();
+
+
+        Team team = teamService.createTeam(TeamDto.Request.builder().name("TEST-TEAM").leader("GilDong").build());
+
+        TeamUser.builder().team(team).user(user).build();
+        TeamUser.builder().team(team).user(newUser).build();
+
+        scheduleService.createTeamSchedule(user, teamShedule, team.getId());
+
+        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size()-1).getStart(), LocalDateTime.parse(teamShedule.getStart(), formatter));
+        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size()-1).getStart(), newUser.getSchedules().get(newUser.getSchedules().size()-1).getStart());
 
 
     }
@@ -182,7 +208,7 @@ public class ScheduleServiceTest {
         LocalDateTime startDate = LocalDateTime.parse("2020-10-11 14:00", formatter);
         LocalDateTime endDate = LocalDateTime.parse("2020-10-11 21:00", formatter);
 
-        List<ScheduleDto.Response> teamSchedules = scheduleService.getCandidateSchedules(startDate, endDate, team.getTeamUser());
+        List<ScheduleDto.Response> teamSchedules = scheduleService.getCandidateSchedules(startDate, endDate, team.getId());
 
         for (ScheduleDto.Response ts : teamSchedules) {
             System.out.println("!!!!!!!!!" + ts.getStart() + " ~ " + ts.getEnd());

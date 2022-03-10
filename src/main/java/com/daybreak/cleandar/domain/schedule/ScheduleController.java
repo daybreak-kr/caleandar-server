@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    @PostMapping
+    @PostMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)
     public ScheduleDto.Response createSchedule(@AuthenticationPrincipal UserPrincipal principal, @RequestBody ScheduleDto.Request request) {
         Schedule schedule = scheduleService.create(principal.getUser(), request);
@@ -57,4 +59,16 @@ public class ScheduleController {
     }
 
 
+    @GetMapping("/candidates")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ScheduleDto.Response> getCandidates(String start, String end, Long teamId) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return scheduleService.getCandidateSchedules(LocalDateTime.parse(start, formatter), LocalDateTime.parse(end, formatter), teamId);
+    }
+
+    @PostMapping("/team")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ScheduleDto.Response createTeamSchedule(@AuthenticationPrincipal UserPrincipal principal, @RequestBody ScheduleDto.Request request, Long teamId){
+        return scheduleService.createTeamSchedule(principal.getUser(), request, teamId);
+    }
 }
