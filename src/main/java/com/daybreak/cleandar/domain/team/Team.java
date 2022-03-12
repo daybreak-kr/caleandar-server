@@ -1,6 +1,7 @@
 package com.daybreak.cleandar.domain.team;
 
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
+import com.daybreak.cleandar.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,6 +41,10 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     private List<TeamUser> teamUser = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Builder
     public Team(String name, String leader){

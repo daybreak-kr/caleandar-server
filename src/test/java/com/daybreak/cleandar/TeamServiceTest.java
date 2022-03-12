@@ -20,7 +20,6 @@ class TeamServiceTest {
     private TeamRepository teamRepository;
 
     @Test
-    //@Transactional
     void createTeam(){
         //given
         String name = "team1";
@@ -45,23 +44,15 @@ class TeamServiceTest {
 
     @Test
     void update(){
-        String name = "team5";
+        String name = "team1";
         String leader = "ejw";
-        String changeName = "team3";
-
-        TeamDto.Request request = TeamDto.Request.builder()
+        String changeName = "team5";
+        Team team = Team.builder()
                 .name(name)
                 .leader(leader)
                 .build();
 
-        Optional<Team> team = teamService.findByNameAndLeader(request);
+        teamService.updateTeam(team, changeName);
 
-        team.ifPresent(selectTeam->{
-           TeamDto.Request changeRequest = TeamDto.Request.builder()
-                    .name(changeName)
-                    .build();
-           //update 에러
-            teamService.updateTeam(changeRequest);
-        });
     }
 }

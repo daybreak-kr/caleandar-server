@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/teams")
+@RequestMapping(path = "/api/teams")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class TeamController {
@@ -22,13 +22,13 @@ public class TeamController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public TeamDto.Response updateTeam(Team team, String name){
+    public TeamDto.Response updateTeam(Team team, String name) {
         return teamService.updateTeam(team, name);
     }
 
     @DeleteMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public boolean deleteTeam(Team team){
+    @ResponseStatus(HttpStatus.OK)
+    public boolean deleteTeam(Team team) {
         return teamService.deleteTeam(team);
     }
 }
