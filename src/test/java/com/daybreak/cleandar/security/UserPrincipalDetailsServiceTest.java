@@ -1,5 +1,6 @@
 package com.daybreak.cleandar.security;
 
+import com.daybreak.cleandar.builder.UserBuilder;
 import com.daybreak.cleandar.domain.user.User;
 import com.daybreak.cleandar.domain.user.UserDto;
 import com.daybreak.cleandar.domain.user.UserRepository;
@@ -14,6 +15,8 @@ class UserPrincipalDetailsServiceTest {
     private final UserPrincipalDetailsService userService;
     private final UserRepository userRepository;
 
+    private User user;
+
     @Autowired
     public UserPrincipalDetailsServiceTest(UserPrincipalDetailsService userService, UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -22,6 +25,7 @@ class UserPrincipalDetailsServiceTest {
 
     @BeforeEach
     void setUp() {
+        user = new UserBuilder().build();
     }
 
     @AfterEach
@@ -32,32 +36,23 @@ class UserPrincipalDetailsServiceTest {
     @Test
     @DisplayName("유저 생성")
     void create() {
-        String email = "example@example.com";
-        String password = "qwer1234";
-        String name = "example";
-
         UserDto.Request request = UserDto.Request.builder()
-                .email(email).password(password).name(name).build();
+                .email(user.getEmail()).password(user.getPassword()).name(user.getName()).build();
 
-        User user = userService.create(request);
+        User newUser = userService.create(request);
 
-        Assertions.assertNotNull(user);
-        Assertions.assertNotNull(user.getId());
-        Assertions.assertEquals(user.getEmail(), email);
-        Assertions.assertEquals(user.getName(), name);
+        Assertions.assertNotNull(newUser);
+        Assertions.assertNotNull(newUser.getId());
+        Assertions.assertEquals(newUser.getEmail(), user.getEmail());
+        Assertions.assertEquals(newUser.getName(), user.getName());
     }
 
     @Test
     @DisplayName("유저 검색")
     void loadUserByUsername() {
-        String email = "example@example.com";
-        String password = "qwer1234";
-        String name = "example";
+        userRepository.save(user);
+        UserDetails userDetails = userService.loadUserByUsername(user.getEmail());
 
-        userRepository.save(User.builder().email(email).password(password).name(name).build());
-
-        UserDetails userDetails = userService.loadUserByUsername(email);
-
-        Assertions.assertEquals(email, userDetails.getUsername());
+        Assertions.assertEquals(user.getEmail(), userDetails.getUsername());
     }
 }
