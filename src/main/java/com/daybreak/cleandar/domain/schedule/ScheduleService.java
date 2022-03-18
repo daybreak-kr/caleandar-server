@@ -3,6 +3,7 @@ package com.daybreak.cleandar.domain.schedule;
 import com.daybreak.cleandar.domain.team.Team;
 import com.daybreak.cleandar.domain.team.TeamRepository;
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
+import com.daybreak.cleandar.domain.teamuser.TeamUserRepository;
 import com.daybreak.cleandar.domain.user.User;
 import com.daybreak.cleandar.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
+    private final TeamUserRepository teamUserRepository;
 
     public Schedule create(User user, ScheduleDto.Request request) {
         Schedule schedule = request.toEntity(user);
@@ -62,22 +64,15 @@ public class ScheduleService {
 
         List<ScheduleDto.Response> candidate = new ArrayList<>();
         List<ScheduleDto.Response> teamSchedules = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         List<TeamUser> teamUser = teamRepository.findById(teamId).get().getTeamUser();
+        List<User> users = userRepository.findByTeamUserIn(teamUser);
+        List<Schedule> schedules = scheduleRepository.findByUserInAndStartLessThanAndEndGreaterThan(users, endDate, startDate);
 
-        for (TeamUser member : teamUser) {
-            for (Schedule schedule : member.getUser().getSchedules()) {
-                if (startDate.isBefore(schedule.getEnd()) && endDate.isAfter(schedule.getStart()))
-                    candidate.add(new ScheduleDto.Response(schedule));
-            }
+        for (Schedule schedule : schedules) {
+            candidate.add(new ScheduleDto.Response(schedule));
         }
-
-        return compareSchedules(startDate, endDate, candidate, teamSchedules);
-    }
-
-    private List<ScheduleDto.Response> compareSchedules(LocalDateTime startDate, LocalDateTime endDate, List<ScheduleDto.Response> candidate, List<ScheduleDto.Response> teamSchedules) {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         if (startDate.isBefore(LocalDateTime.parse(candidate.get(0).getStart(), formatter))) {
             teamSchedules.add(new ScheduleDto.Response(startDate.format(formatter), candidate.get(0).getStart()));
@@ -87,7 +82,6 @@ public class ScheduleService {
             if (candidate.get(i - 1).getEnd().equals(candidate.get(i).getStart())) {
                 continue;
             }
-
             teamSchedules.add(new ScheduleDto.Response(candidate.get(i - 1).getEnd(), candidate.get(i).getStart()));
         }
 
@@ -97,6 +91,7 @@ public class ScheduleService {
 
         return teamSchedules;
     }
+
 
     public ScheduleDto.Response createTeamSchedule(User user, ScheduleDto.Request request, Long teamId) {
 

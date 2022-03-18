@@ -1,22 +1,26 @@
-package com.daybreak.cleandar.domain.user;
+package com.daybreak.cleandar.domain.teamuser;
 
 import com.daybreak.cleandar.domain.team.Team;
 import com.daybreak.cleandar.domain.team.TeamRepository;
-import com.daybreak.cleandar.domain.teamuser.TeamUser;
-import com.daybreak.cleandar.domain.teamuser.TeamUserRepository;
-import org.junit.jupiter.api.*;
+import com.daybreak.cleandar.domain.user.User;
+import com.daybreak.cleandar.domain.user.UserRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class UserRepositoryTest {
+public class TeamUserRepositoryTest {
+
+    @Autowired
+    private TeamUserRepository teamUserRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -24,38 +28,32 @@ class UserRepositoryTest {
     @Autowired
     private TeamRepository teamRepository;
 
-    @Autowired
-    private TeamUserRepository teamUserRepository;
-
-    private User example;
+    private User user;
 
     @BeforeEach
     void setUp() {
-        example = userRepository.save(User.builder()
-                .email("example@example.com")
-                .password(new BCryptPasswordEncoder().encode("qwer1234"))
-                .name("example")
+        String email = "dev.test@gmail.com";
+        String pwd = "1234";
+        String name = "GilDong";
+
+        user = userRepository.save(User.builder()
+                .email(email)
+                .password(pwd)
+                .name(name)
                 .build());
+
     }
 
     @AfterEach
     void tearDown() {
+        teamUserRepository.deleteAll();
         userRepository.deleteAll();
+        teamRepository.deleteAll();
     }
 
-    @Test
-    @DisplayName("유저 이메일 검색")
-    void findUserByEmail() {
-        String email = "example@example.com";
-        User user = userRepository.findUserByEmail(email);
-
-        assertNotNull(user);
-        assertEquals(user.getEmail(), email);
-    }
 
     @Test
-    @DisplayName("팀 유저 검색")
-    void findByTeamUser() {
+    void findUserByTeamId() {
         String email = "Ahn.test@gmail.com";
         String pwd = "0301";
         String name = "Ahn Thomas";
@@ -67,14 +65,14 @@ class UserRepositoryTest {
                 .build());
 
         Team team = teamRepository.save(Team.builder().name("TEST-TEAM").leader("GilDong").build());
-        TeamUser teamUser = TeamUser.builder().team(team).user(example).build();
+        TeamUser teamUser = TeamUser.builder().team(team).user(user).build();
         TeamUser teamUser2 = TeamUser.builder().team(team).user(newUser).build();
 
         //TODO Team Create에 포함시켜야하나?
         teamUserRepository.save(teamUser);
         teamUserRepository.save(teamUser2);
 
-        List<User> users = userRepository.findByTeamUserIn(teamUserRepository.findByTeam(team));
+        List<TeamUser> users = teamUserRepository.findByTeam(team);
 
         Assertions.assertEquals(2, users.size());
     }

@@ -4,6 +4,7 @@ import com.daybreak.cleandar.domain.team.Team;
 import com.daybreak.cleandar.domain.team.TeamDto;
 import com.daybreak.cleandar.domain.team.TeamService;
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
+import com.daybreak.cleandar.domain.teamuser.TeamUserRepository;
 import com.daybreak.cleandar.domain.user.User;
 import com.daybreak.cleandar.domain.user.UserRepository;
 import org.junit.jupiter.api.*;
@@ -22,6 +23,7 @@ public class ScheduleServiceTest {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final TeamService teamService;
+    private final TeamUserRepository teamUserRepository;
 
     private Schedule schedule;
     private ScheduleDto.Request request;
@@ -30,11 +32,12 @@ public class ScheduleServiceTest {
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Autowired
-    public ScheduleServiceTest(ScheduleService scheduleService, ScheduleRepository scheduleRepository, UserRepository userRepository, TeamService teamService) {
+    public ScheduleServiceTest(ScheduleService scheduleService, ScheduleRepository scheduleRepository, UserRepository userRepository, TeamService teamService, TeamUserRepository teamUserRepository) {
         this.scheduleService = scheduleService;
         this.scheduleRepository = scheduleRepository;
         this.userRepository = userRepository;
         this.teamService = teamService;
+        this.teamUserRepository = teamUserRepository;
     }
 
 
@@ -171,8 +174,8 @@ public class ScheduleServiceTest {
 
         scheduleService.createTeamSchedule(user, teamShedule, team.getId());
 
-        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size()-1).getStart(), LocalDateTime.parse(teamShedule.getStart(), formatter));
-        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size()-1).getStart(), newUser.getSchedules().get(newUser.getSchedules().size()-1).getStart());
+        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), LocalDateTime.parse(teamShedule.getStart(), formatter));
+        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), newUser.getSchedules().get(newUser.getSchedules().size() - 1).getStart());
 
 
     }
@@ -195,9 +198,11 @@ public class ScheduleServiceTest {
 
         Team team = teamService.createTeam(TeamDto.Request.builder().name("TEST-TEAM").leader("GilDong").build());
 
-        TeamUser.builder().team(team).user(user).build();
-        TeamUser.builder().team(team).user(newUser).build();
+        TeamUser teamUser = TeamUser.builder().team(team).user(user).build();
+        TeamUser teamUser2 = TeamUser.builder().team(team).user(newUser).build();
 
+        teamUserRepository.save(teamUser);
+        teamUserRepository.save(teamUser2);
 
         scheduleService.create(newUser, ScheduleDto.Request.builder()
                 .start("2020-10-11 18:00")
