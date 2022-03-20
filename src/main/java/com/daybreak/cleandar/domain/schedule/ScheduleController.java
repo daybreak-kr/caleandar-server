@@ -4,71 +4,99 @@ import com.daybreak.cleandar.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping(path = "/api/schedules")
-@CrossOrigin(origins = "*")
+@RequestMapping("/schedules")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    @PostMapping("/new")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ScheduleDto.Response createSchedule(@AuthenticationPrincipal UserPrincipal principal, @RequestBody ScheduleDto.Request request) {
-        Schedule schedule = scheduleService.create(principal.getUser(), request);
-        return new ScheduleDto.Response(schedule);
+    @GetMapping("/new")
+    public String createScheduleForm() {
+        return "schedules/new";
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public boolean deleteSchedule(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long id) {
-
-        return scheduleService.delete(principal.getUsername(), id);
+    @GetMapping("/{id}/edit")
+    public String editScheduleForm() {
+        return "schedules/edit";
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ScheduleDto.Response updateSchedule(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long id, @RequestBody ScheduleDto.Request request) {
-        Schedule schedule = scheduleService.update(principal.getUsername(), request);
-        return new ScheduleDto.Response(schedule);
-    }
-
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<ScheduleDto.Response> getAllSchedule(@AuthenticationPrincipal UserPrincipal principal) {
+    @GetMapping("")
+    public ModelAndView getAllSchedule(@AuthenticationPrincipal UserPrincipal principal) {
+        ModelAndView mav = new ModelAndView("schedules/list");
         List<ScheduleDto.Response> list = new ArrayList<>();
 
         for (Schedule schedule : scheduleService.getAll(principal.getUsername())) {
             list.add(new ScheduleDto.Response(schedule));
         }
 
-        return list;
+        mav.addObject("schedules", list);
+        mav.setStatus(HttpStatus.OK);
+
+        return mav;
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ScheduleDto.Response getSchedule(@PathVariable Long id) {
-        return new ScheduleDto.Response(scheduleService.getOne(id));
+    public ModelAndView getSchedule(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("schedules/detail");
+        mav.addObject("schedule", new ScheduleDto.Response(scheduleService.getOne(id)));
+        mav.setStatus(HttpStatus.OK);
+        return mav;
     }
-
 
     @GetMapping("/candidates")
-    @ResponseStatus(HttpStatus.OK)
-    public List<ScheduleDto.Response> getCandidates(String start, String end, Long teamId) {
+    public ModelAndView getCandidates(String start, String end, Long teamId) {
+        ModelAndView mav = new ModelAndView("redirect:/");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return scheduleService.getCandidateSchedules(LocalDateTime.parse(start, formatter), LocalDateTime.parse(end, formatter), teamId);
+        mav.addObject("candidates", scheduleService.getCandidateSchedules(LocalDateTime.parse(start, formatter), LocalDateTime.parse(end, formatter), teamId));
+        mav.setStatus(HttpStatus.OK);
+        return mav;
     }
 
+    @PostMapping("/new")
+    public ModelAndView createSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request) {
+        ModelAndView mav = new ModelAndView("schedules/detail");
+        Schedule schedule = scheduleService.create(principal.getUser(), request);
+        mav.addObject("schedule", new ScheduleDto.Response(schedule));
+        mav.setStatus(HttpStatus.CREATED);
+        return mav;
+    }
+
+    @DeleteMapping("/{id}")
+    public ModelAndView deleteSchedule(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("schedules/list");
+        mav.addObject("result", scheduleService.delete(principal.getUsername(), id));
+        mav.setStatus(HttpStatus.OK);
+        return mav;
+    }
+
+    //TODO view name 수정
+    @PutMapping("/{id}")
+    public ModelAndView updateSchedule(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long id, ScheduleDto.Request request) {
+        ModelAndView mav = new ModelAndView("schedules/detail");
+        Schedule schedule = scheduleService.update(principal.getUsername(), request);
+//        String url = "redirect:/schedules/" + schedule.getId().toString();
+//        mav.setViewName(url);
+        mav.addObject("schedule", new ScheduleDto.Response(schedule));
+        mav.setStatus(HttpStatus.OK);
+        return mav;
+    }
+
+
     @PostMapping("/team")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ScheduleDto.Response createTeamSchedule(@AuthenticationPrincipal UserPrincipal principal, @RequestBody ScheduleDto.Request request, Long teamId){
-        return scheduleService.createTeamSchedule(principal.getUser(), request, teamId);
+    public ModelAndView createTeamSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request, Long teamId) {
+        ModelAndView mav = new ModelAndView("schedules/detail");
+        mav.addObject("teamSchedule", scheduleService.createTeamSchedule(principal.getUser(), request, teamId));
+        mav.setStatus(HttpStatus.CREATED);
+        return mav;
     }
 }
