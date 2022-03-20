@@ -22,13 +22,13 @@ public class TeamController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public TeamDto.Response updateTeam(Team team, String name) {
-        return teamService.updateTeam(team, name);
+    public TeamDto.Response updateTeam(Team team, TeamDto.Request request) {
+        return teamService.updateTeam(team.getName(), team.getLeader(), request);
     }
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public boolean deleteTeam(Team team) {
-        return teamService.deleteTeam(team);
+    public boolean deleteTeam(Team team, @PathVariable Long id) {
+        return teamService.deleteTeam(team.getName(),team.getLeader(),id);
     }
 }
