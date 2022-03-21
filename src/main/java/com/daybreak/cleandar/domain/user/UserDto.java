@@ -5,6 +5,7 @@ import lombok.*;
 public class UserDto {
 
     @Getter
+    @Setter
     @NoArgsConstructor
     public static class Request {
         private Long id;

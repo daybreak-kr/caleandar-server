@@ -1,6 +1,7 @@
 package com.daybreak.cleandar.domain.team;
 
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
+import com.daybreak.cleandar.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,12 +23,10 @@ import java.util.List;
 @Table(name = "teams")
 public class Team {
 
-    //Pri key, Auto_increment 설정
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //Null 허용 x
     @Column(nullable = false)
     private String name;
 
@@ -40,12 +39,13 @@ public class Team {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    //찾아볼내용, 테이블과 테이블 연결시(N:M)
     @OneToMany(mappedBy = "team")
     private List<TeamUser> teamUser = new ArrayList<>();
 
-    //빌더
-    //@setter 사용 시 필드 값이 변경될 위험? >> Builder 객체 사용
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Builder
     public Team(String name, String leader){
         this.name = name;

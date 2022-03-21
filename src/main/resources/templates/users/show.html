@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymelef.org"
+      layout:decorate="~{layouts/layout.html}">
+<body>
+<div layout:fragment="content">
+    <h1>UPDATE</h1>
+    <form method="PUT" th:action="@{/users}">
+        <input type="hidden" name="id">
+        <input type="email" th:field="*{userDto.email}">
+        <input type="text" th:field="*{userDto.name}">
+        <input type="submit" value="update">
+    </form>
+</div>
+</body>
+</html>
