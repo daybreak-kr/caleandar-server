@@ -1,5 +1,6 @@
 package com.daybreak.cleandar.domain.team;
 
+import com.daybreak.cleandar.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -30,5 +31,11 @@ public class TeamController {
     @ResponseStatus(HttpStatus.OK)
     public boolean deleteTeam(Team team, @PathVariable Long id) {
         return teamService.deleteTeam(team.getName(),team.getLeader(),id);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public User checkUserInformation(String email){
+        return teamService.checkUserInformation(email);
     }
 }

@@ -81,4 +81,13 @@ class TeamServiceTest {
         Assertions.assertTrue(result);
 
     }
+
+    @Test
+    @Transactional
+    void isAccessUser(){
+        //given
+        String email = "epsxkf01@naver.com";
+
+        teamService.checkUserInformation(email);
+    }
 }
