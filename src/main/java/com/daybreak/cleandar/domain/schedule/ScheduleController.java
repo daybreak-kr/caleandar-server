@@ -25,7 +25,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editScheduleForm() {
+    public String editScheduleForm(@PathVariable Long id) {
         return "schedules/edit";
     }
 
@@ -64,6 +64,14 @@ public class ScheduleController {
         return mav;
     }
 
+    @PostMapping("/team/{id}")
+    public ModelAndView createTeamSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request, @PathVariable(value = "id") Long teamId) {
+        ModelAndView mav = new ModelAndView("teams/detail");
+        mav.addObject("teamSchedule", scheduleService.createTeamSchedule(principal.getUser(), request, teamId));
+        mav.setStatus(HttpStatus.CREATED);
+        return mav;
+    }
+
     @DeleteMapping("/{id}")
     public ModelAndView deleteSchedule(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long id) {
         ModelAndView mav = new ModelAndView("schedules/list");
@@ -78,15 +86,6 @@ public class ScheduleController {
         ScheduleDto.Response schedule = scheduleService.update(principal.getUsername(), request);
         mav.addObject("schedule", schedule);
         mav.setStatus(HttpStatus.OK);
-        return mav;
-    }
-
-
-    @PostMapping("/team/{id}")
-    public ModelAndView createTeamSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request, @PathVariable Long teamId) {
-        ModelAndView mav = new ModelAndView("teams/detail");
-        mav.addObject("teamSchedule", scheduleService.createTeamSchedule(principal.getUser(), request, teamId));
-        mav.setStatus(HttpStatus.CREATED);
         return mav;
     }
 }

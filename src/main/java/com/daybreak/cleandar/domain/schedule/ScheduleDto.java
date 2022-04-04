@@ -12,6 +12,7 @@ public class ScheduleDto {
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Getter
+    @Setter
     @NoArgsConstructor
     public static class Request {
         private Long id;
