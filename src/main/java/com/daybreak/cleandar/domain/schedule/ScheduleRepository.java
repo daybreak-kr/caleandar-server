@@ -7,5 +7,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-    List<Schedule> findByUserInAndStartLessThanAndEndGreaterThan(List<User> users, LocalDateTime end, LocalDateTime start);
+    Schedule findScheduleById(Long id);
+
+    List<Schedule> findByUserInAndEndGreaterThanAndStartLessThan(List<User> users, LocalDateTime start, LocalDateTime end);
+
+    List<Schedule> findByUser(User user);
 }

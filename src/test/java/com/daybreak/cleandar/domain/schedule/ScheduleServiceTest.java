@@ -1,8 +1,11 @@
 package com.daybreak.cleandar.domain.schedule;
 
+import com.daybreak.cleandar.builder.ScheduleBuilder;
+import com.daybreak.cleandar.builder.TeamBuilder;
+import com.daybreak.cleandar.builder.TeamUserBuilder;
+import com.daybreak.cleandar.builder.UserBuilder;
 import com.daybreak.cleandar.domain.team.Team;
-import com.daybreak.cleandar.domain.team.TeamDto;
-import com.daybreak.cleandar.domain.team.TeamService;
+import com.daybreak.cleandar.domain.team.TeamRepository;
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
 import com.daybreak.cleandar.domain.teamuser.TeamUserRepository;
 import com.daybreak.cleandar.domain.user.User;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -22,46 +26,44 @@ public class ScheduleServiceTest {
     private final ScheduleService scheduleService;
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
-    private final TeamService teamService;
+    private final TeamRepository teamRepository;
     private final TeamUserRepository teamUserRepository;
 
+    private UserBuilder userBuilder = new UserBuilder();
+    private ScheduleBuilder scheduleBuilder = new ScheduleBuilder();
+    private TeamBuilder teamBuilder = new TeamBuilder();
+    private TeamUserBuilder teamUserBuilder = new TeamUserBuilder();
+
     private Schedule schedule;
-    private ScheduleDto.Request request;
     private User user;
+    private User newUser;
+    private Team team;
 
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Autowired
-    public ScheduleServiceTest(ScheduleService scheduleService, ScheduleRepository scheduleRepository, UserRepository userRepository, TeamService teamService, TeamUserRepository teamUserRepository) {
+    public ScheduleServiceTest(ScheduleService scheduleService, ScheduleRepository scheduleRepository, UserRepository userRepository, TeamUserRepository teamUserRepository, TeamRepository teamRepository) {
         this.scheduleService = scheduleService;
         this.scheduleRepository = scheduleRepository;
         this.userRepository = userRepository;
-        this.teamService = teamService;
         this.teamUserRepository = teamUserRepository;
+        this.teamRepository = teamRepository;
     }
 
 
     @BeforeEach
     void setUp() {
-        String email = "dev.test@gmail.com";
-        String pwd = "1234";
-        String name = "GilDong";
+        //Entity
+        user = userRepository.save(userBuilder.build());
+        schedule = scheduleRepository.save(scheduleBuilder.withUser(user).build());
+        newUser = userRepository.save(userBuilder.withId(2L).withEmail("example22@example.com").build());
+        team = teamRepository.save(teamBuilder.build());
 
-        user = userRepository.save(User.builder()
-                .email(email)
-                .password(pwd)
-                .name(name)
-                .build());
-
-        request = ScheduleDto.Request.builder()
-                .start("2020-10-11 13:00")
-                .end("2020-10-11 16:00")
-                .title("TEST")
-                .description("This is Test").build();
-
-        schedule = scheduleService.create(user, request);
-
-
+        //create teamUsers
+        List<TeamUser> teamUsers = new ArrayList<>();
+        teamUsers.add(teamUserBuilder.withTeamAndUser(team, user).build());
+        teamUsers.add(teamUserBuilder.withTeamAndUser(team, newUser).build());
+        teamUserRepository.saveAll(teamUsers);
     }
 
     @AfterEach
@@ -72,31 +74,35 @@ public class ScheduleServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("일정 생성")
+    @DisplayName("create schedule")
     public void addSchedule() {
 
-        Assertions.assertNotNull(schedule.getId());
-        Assertions.assertEquals(request.getTitle(), schedule.getTitle());
-        Assertions.assertNotNull(schedule.getUser());
-        Assertions.assertEquals(schedule.getUser().getId(), user.getId());
+        ScheduleDto.Request request = ScheduleDto.Request.builder()
+                .start("2020-10-11 13:00")
+                .end("2020-10-11 16:00")
+                .title("TEST")
+                .description("This is Test").build();
+
+        ScheduleDto.Response oneSchedule = scheduleService.create(user, request);
+
+        Assertions.assertNotNull(oneSchedule.getId());
+        Assertions.assertEquals(request.getTitle(), oneSchedule.getTitle());
+        Assertions.assertNotNull(oneSchedule.getUser());
+        Assertions.assertEquals(oneSchedule.getUser().getId(), user.getId());
     }
 
     @Test
     @Transactional
-    @DisplayName("일정 삭제")
+    @DisplayName("delete schedule")
     public void delete() {
-
-        scheduleService.delete("dev.test@gmail.com", schedule.getId());
-
+        scheduleService.delete(user.getEmail(), schedule.getId());
         Assertions.assertFalse(scheduleRepository.existsById(schedule.getId()));
     }
 
     @Test
     @Transactional
-    @DisplayName("일정 수정")
+    @DisplayName("update schedule")
     public void update() {
-
-        //수정
         String newTitle = "NEW TEST";
         String newStartTime = "2022-02-22 13:00";
         String newEndTime = "2022-02-22 14:00";
@@ -109,72 +115,55 @@ public class ScheduleServiceTest {
                 .title(newTitle)
                 .description(newDescription).build();
 
-        Schedule updateSchedule = scheduleService.update("dev.test@gmail.com", updateRequest);
+        ScheduleDto.Response updateSchedule = scheduleService.update(user.getEmail(), updateRequest);
 
-        Assertions.assertEquals(updateSchedule.getStart(), LocalDateTime.parse(newStartTime, formatter));
-        Assertions.assertNotEquals(updateSchedule.getStart(), LocalDateTime.parse("2020-10-11 13:00", formatter));
+        Assertions.assertEquals(updateSchedule.getStart(), newStartTime);
         Assertions.assertEquals(updateSchedule.getTitle(), newTitle);
-        Assertions.assertNotEquals("TEST", updateSchedule.getTitle());
+        Assertions.assertEquals(updateSchedule.getId(), schedule.getId());
     }
 
     @Test
     @Transactional
-    @DisplayName("일정 전체 조회")
+    @DisplayName("get all schedules")
     public void getAll() {
 
-        ScheduleDto.Request request2 = ScheduleDto.Request.builder()
-                .start("2022-12-12 13:00")
-                .end("2022-12-12 22:00")
-                .title("newTitle")
-                .description("newDescription").build();
+        //User 추가
+        LocalDateTime start = LocalDateTime.parse("2022-12-12 13:00", formatter);
+        LocalDateTime end = LocalDateTime.parse("2022-12-12 22:00", formatter);
+        Schedule newSchedule = scheduleRepository.save(scheduleBuilder.withId(2L).withStartAndEnd(start, end).withUser(user).build());
 
-        Schedule schedule2 = scheduleService.create(user, request2);
 
-        List<Schedule> list = scheduleService.getAll("dev.test@gmail.com");
+        List<ScheduleDto.Response> list = scheduleService.getAll(user.getEmail());
 
         Assertions.assertEquals(2, list.size());
         Assertions.assertEquals(list.get(0).getId(), schedule.getId());
-        Assertions.assertEquals(list.get(1).getId(), schedule2.getId());
+        Assertions.assertEquals(list.get(1).getId(), newSchedule.getId());
     }
 
     @Test
     @Transactional
-    @DisplayName("일정 조회")
+    @DisplayName("get one schedule")
     public void getOne() {
-        Schedule selectSchedule = scheduleService.getOne(schedule.getId());
-
-        Assertions.assertEquals(selectSchedule, schedule);
+        ScheduleDto.Response selectSchedule = scheduleService.getOne(schedule.getId());
+        Assertions.assertEquals(selectSchedule.getId(), schedule.getId());
     }
 
     @Test
     @Transactional
-    @DisplayName("팀 일정 생성")
+    @DisplayName("create team schedule")
     public void makeAppointment() {
-        String email = "Ahn.test@gmail.com";
-        String pwd = "0301";
-        String name = "Ahn Thomas";
 
-        User newUser = userRepository.save(User.builder()
-                .email(email)
-                .password(pwd)
-                .name(name)
-                .build());
-
-        ScheduleDto.Request teamShedule = ScheduleDto.Request.builder()
+        ScheduleDto.Request teamSchedule = ScheduleDto.Request.builder()
                 .start("2022-10-11 13:00")
                 .end("2022-10-11 16:00")
                 .title("Team Schedule")
                 .description("This is Test").build();
 
+        scheduleService.createTeamSchedule(user, teamSchedule, team.getId());
 
-        Team team = teamService.createTeam(TeamDto.Request.builder().name("TEST-TEAM").leader("GilDong").build());
+        List<Schedule> child = scheduleRepository.findByUser(user);
 
-        TeamUser.builder().team(team).user(user).build();
-        TeamUser.builder().team(team).user(newUser).build();
-
-        scheduleService.createTeamSchedule(user, teamShedule, team.getId());
-
-        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), LocalDateTime.parse(teamShedule.getStart(), formatter));
+        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), LocalDateTime.parse(teamSchedule.getStart(), formatter));
         Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), newUser.getSchedules().get(newUser.getSchedules().size() - 1).getStart());
 
 
@@ -182,44 +171,18 @@ public class ScheduleServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("팀 일정 후보 생성")
+    @DisplayName("create team schedule candidates")
     public void getCandidateSchedules() {
 
-        String email = "Ahn.test@gmail.com";
-        String pwd = "0301";
-        String name = "Ahn Thomas";
-
-        User newUser = userRepository.save(User.builder()
-                .email(email)
-                .password(pwd)
-                .name(name)
-                .build());
-
-
-        Team team = teamService.createTeam(TeamDto.Request.builder().name("TEST-TEAM").leader("GilDong").build());
-
-        TeamUser teamUser = TeamUser.builder().team(team).user(user).build();
-        TeamUser teamUser2 = TeamUser.builder().team(team).user(newUser).build();
-
-        teamUserRepository.save(teamUser);
-        teamUserRepository.save(teamUser2);
-
-        scheduleService.create(newUser, ScheduleDto.Request.builder()
-                .start("2020-10-11 18:00")
-                .end("2020-10-11 20:00")
-                .title("Ahn_TEST")
-                .description("Ahn_Schedule").build());
+        LocalDateTime start = LocalDateTime.parse("2020-10-11 18:00", formatter);
+        LocalDateTime end = LocalDateTime.parse("2020-10-11 20:00", formatter);
+        scheduleRepository.save(scheduleBuilder.withStartAndEnd(start, end).withUser(newUser).build());
 
         LocalDateTime startDate = LocalDateTime.parse("2020-10-11 14:00", formatter);
         LocalDateTime endDate = LocalDateTime.parse("2020-10-11 21:00", formatter);
 
         List<ScheduleDto.Response> teamSchedules = scheduleService.getCandidateSchedules(startDate, endDate, team.getId());
 
-        for (ScheduleDto.Response ts : teamSchedules) {
-            System.out.println("!!!!!!!!!" + ts.getStart() + " ~ " + ts.getEnd());
-        }
-
         Assertions.assertEquals(2, teamSchedules.size());
     }
-
 }

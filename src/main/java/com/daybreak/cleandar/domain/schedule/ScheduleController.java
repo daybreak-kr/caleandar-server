@@ -10,8 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -33,13 +32,7 @@ public class ScheduleController {
     @GetMapping("")
     public ModelAndView getAllSchedule(@AuthenticationPrincipal UserPrincipal principal) {
         ModelAndView mav = new ModelAndView("schedules/list");
-        List<ScheduleDto.Response> list = new ArrayList<>();
-
-        for (Schedule schedule : scheduleService.getAll(principal.getUsername())) {
-            list.add(new ScheduleDto.Response(schedule));
-        }
-
-        mav.addObject("schedules", list);
+        mav.addObject("schedules", scheduleService.getAll(principal.getUsername()));
         mav.setStatus(HttpStatus.OK);
 
         return mav;
@@ -48,14 +41,14 @@ public class ScheduleController {
     @GetMapping("/{id}")
     public ModelAndView getSchedule(@PathVariable Long id) {
         ModelAndView mav = new ModelAndView("schedules/detail");
-        mav.addObject("schedule", new ScheduleDto.Response(scheduleService.getOne(id)));
+        mav.addObject("schedule", scheduleService.getOne(id));
         mav.setStatus(HttpStatus.OK);
         return mav;
     }
 
     @GetMapping("/candidates")
     public ModelAndView getCandidates(String start, String end, Long teamId) {
-        ModelAndView mav = new ModelAndView("redirect:/");
+        ModelAndView mav = new ModelAndView("teams/candidates");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         mav.addObject("candidates", scheduleService.getCandidateSchedules(LocalDateTime.parse(start, formatter), LocalDateTime.parse(end, formatter), teamId));
         mav.setStatus(HttpStatus.OK);
@@ -65,8 +58,8 @@ public class ScheduleController {
     @PostMapping("/new")
     public ModelAndView createSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request) {
         ModelAndView mav = new ModelAndView("schedules/detail");
-        Schedule schedule = scheduleService.create(principal.getUser(), request);
-        mav.addObject("schedule", new ScheduleDto.Response(schedule));
+        ScheduleDto.Response schedule = scheduleService.create(principal.getUser(), request);
+        mav.addObject("schedule", schedule);
         mav.setStatus(HttpStatus.CREATED);
         return mav;
     }
@@ -79,22 +72,19 @@ public class ScheduleController {
         return mav;
     }
 
-    //TODO view name 수정
     @PutMapping("/{id}")
     public ModelAndView updateSchedule(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long id, ScheduleDto.Request request) {
         ModelAndView mav = new ModelAndView("schedules/detail");
-        Schedule schedule = scheduleService.update(principal.getUsername(), request);
-//        String url = "redirect:/schedules/" + schedule.getId().toString();
-//        mav.setViewName(url);
-        mav.addObject("schedule", new ScheduleDto.Response(schedule));
+        ScheduleDto.Response schedule = scheduleService.update(principal.getUsername(), request);
+        mav.addObject("schedule", schedule);
         mav.setStatus(HttpStatus.OK);
         return mav;
     }
 
 
-    @PostMapping("/team")
-    public ModelAndView createTeamSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request, Long teamId) {
-        ModelAndView mav = new ModelAndView("schedules/detail");
+    @PostMapping("/team/{id}")
+    public ModelAndView createTeamSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request, @PathVariable Long teamId) {
+        ModelAndView mav = new ModelAndView("teams/detail");
         mav.addObject("teamSchedule", scheduleService.createTeamSchedule(principal.getUser(), request, teamId));
         mav.setStatus(HttpStatus.CREATED);
         return mav;

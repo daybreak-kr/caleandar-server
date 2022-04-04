@@ -1,5 +1,8 @@
 package com.daybreak.cleandar.domain.user;
 
+import com.daybreak.cleandar.builder.TeamBuilder;
+import com.daybreak.cleandar.builder.TeamUserBuilder;
+import com.daybreak.cleandar.builder.UserBuilder;
 import com.daybreak.cleandar.domain.team.Team;
 import com.daybreak.cleandar.domain.team.TeamRepository;
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
@@ -10,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,15 +31,15 @@ class UserRepositoryTest {
     @Autowired
     private TeamUserRepository teamUserRepository;
 
+    private UserBuilder userBuilder = new UserBuilder();
+    private TeamBuilder teamBuilder = new TeamBuilder();
+    private TeamUserBuilder teamUserBuilder = new TeamUserBuilder();
+
     private User example;
 
     @BeforeEach
     void setUp() {
-        example = userRepository.save(User.builder()
-                .email("example@example.com")
-                .password(new BCryptPasswordEncoder().encode("qwer1234"))
-                .name("example")
-                .build());
+        example = userRepository.save(userBuilder.build());
     }
 
     @AfterEach
@@ -56,23 +60,14 @@ class UserRepositoryTest {
     @Test
     @DisplayName("팀 유저 검색")
     void findByTeamUser() {
-        String email = "Ahn.test@gmail.com";
-        String pwd = "0301";
-        String name = "Ahn Thomas";
 
-        User newUser = userRepository.save(User.builder()
-                .email(email)
-                .password(pwd)
-                .name(name)
-                .build());
+        User newUser = userRepository.save(userBuilder.withId(2L).withEmail("example22@example.com").build());
+        Team team = teamRepository.save(teamBuilder.build());
 
-        Team team = teamRepository.save(Team.builder().name("TEST-TEAM").leader("GilDong").build());
-        TeamUser teamUser = TeamUser.builder().team(team).user(example).build();
-        TeamUser teamUser2 = TeamUser.builder().team(team).user(newUser).build();
-
-        //TODO Team Create에 포함시켜야하나?
-        teamUserRepository.save(teamUser);
-        teamUserRepository.save(teamUser2);
+        List<TeamUser> teamUsers = new ArrayList<>();
+        teamUsers.add(teamUserBuilder.withTeamAndUser(team, example).build());
+        teamUsers.add(teamUserBuilder.withTeamAndUser(team, newUser).build());
+        teamUserRepository.saveAll(teamUsers);
 
         List<User> users = userRepository.findByTeamUserIn(teamUserRepository.findByTeam(team));
 

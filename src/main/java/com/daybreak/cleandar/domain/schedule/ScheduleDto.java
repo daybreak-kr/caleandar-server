@@ -1,11 +1,11 @@
 package com.daybreak.cleandar.domain.schedule;
 
 import com.daybreak.cleandar.domain.user.User;
+import com.daybreak.cleandar.domain.user.UserDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class ScheduleDto {
 
@@ -51,6 +51,7 @@ public class ScheduleDto {
         private String updateAt;
         private String title;
         private String description;
+        private UserDto.Response user;
 
         public Response(Schedule schedule) {
             id = schedule.getId();
@@ -60,6 +61,7 @@ public class ScheduleDto {
             updateAt = schedule.getUpdatedAt().format(formatter);
             title = schedule.getTitle();
             description = schedule.getDescription();
+            user = new UserDto.Response(schedule.getUser());
         }
 
         public Response(String start, String end) {
