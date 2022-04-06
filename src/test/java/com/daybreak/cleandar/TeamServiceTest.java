@@ -53,6 +53,6 @@ class TeamServiceTest {
                 .build();
 
         teamService.updateTeam(team, changeName);
-
+      
     }
 }

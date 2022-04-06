@@ -3,6 +3,7 @@ package com.daybreak.cleandar.domain.teamuser;
 import com.daybreak.cleandar.domain.team.Team;
 import com.daybreak.cleandar.domain.user.User;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,11 @@ public class TeamUser {
     @ManyToOne
     @JoinColumn(name = "users_id")
     private User user;
+
+    @Builder
+    public TeamUser(Team team, User user) {
+        this.team = team;
+        this.user = user;
+        this.team.getTeamUser().add(this);
+    }
 }
