@@ -1,41 +1,44 @@
 package com.daybreak.cleandar.domain.team;
 
-import com.daybreak.cleandar.domain.user.User;
+import com.daybreak.cleandar.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
-@RestController
-@RequestMapping(path = "/api/teams")
-@CrossOrigin(origins = "*")
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Controller
 @RequiredArgsConstructor
+@RequestMapping("/teams")
 public class TeamController {
 
     private final TeamService teamService;
 
+    @GetMapping("new")
+    public ModelAndView teamForm() {
+        ModelAndView mav = new ModelAndView("teams/new");
+        return mav;
+    }
+
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public TeamDto.Response createTeam(@RequestBody TeamDto.Request request) {
-        Team team = teamService.createTeam(request);
-
-        return new TeamDto.Response(team);
-    }
-
-    @PutMapping
-    @ResponseStatus(HttpStatus.OK)
-    public TeamDto.Response updateTeam(Team team, TeamDto.Request request) {
-        return teamService.updateTeam(team.getName(), team.getLeader(), request);
-    }
-
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.OK)
-    public boolean deleteTeam(Team team, @PathVariable Long id) {
-        return teamService.deleteTeam(team.getName(),team.getLeader(),id);
-    }
-
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public User checkUserInformation(String email){
-        return teamService.checkUserInformation(email);
+    public ModelAndView create(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute TeamDto.Request request) {
+        ModelAndView mav = new ModelAndView("teams/index");
+        request.setLeader(userPrincipal.getUser());
+        Optional<Team> team = Optional.ofNullable(teamService.create(request));
+        if (team.isPresent()) {
+            mav.addObject("team", new TeamDto.Response(team.get()));
+            mav.setStatus(HttpStatus.CREATED);
+        } else {
+            mav.setStatus(HttpStatus.BAD_REQUEST);
+        }
+        return mav;
     }
 }

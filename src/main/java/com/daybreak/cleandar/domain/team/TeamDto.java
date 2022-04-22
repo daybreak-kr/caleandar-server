@@ -1,19 +1,21 @@
 package com.daybreak.cleandar.domain.team;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import com.daybreak.cleandar.domain.user.User;
+import com.daybreak.cleandar.domain.user.UserDto;
+import lombok.*;
 
 public class TeamDto {
 
     @Getter
+    @Setter
+    @NoArgsConstructor
     public static class Request {
         private Long id;
         private String name;
-        private String leader;
+        private User leader;
 
         @Builder
-        public Request(Long id, String name, String leader) {
+        public Request(Long id, String name, User leader) {
             this.id = id;
             this.name = name;
             this.leader = leader;
@@ -22,15 +24,15 @@ public class TeamDto {
 
     @Getter
     @AllArgsConstructor
-    public static class Response{
+    public static class Response {
         private Long id;
         private String name;
-        private String leader;
+        private UserDto.Response leader;
 
         public Response(Team team) {
             id = team.getId();
             name = team.getName();
-            leader = team.getLeader();
+            leader = new UserDto.Response(team.getLeader());
         }
     }
 }

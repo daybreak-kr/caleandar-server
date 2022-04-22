@@ -25,6 +25,11 @@ public class UserBuilder {
         return this;
     }
 
+    public UserBuilder withName(String name) {
+        this.name = name;
+        return this;
+    }
+
     public UserBuilder withSchedules(List<Schedule> schedules) {
         this.schedules = schedules;
         return this;
