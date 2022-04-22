@@ -22,16 +22,13 @@ class TeamServiceTest {
     private TeamRepository teamRepository;
 
     @Test
-    void createTeam(){
+    void createTeam() {
         //given
         String name = "team1";
         String leader = "ejw";
 
         //when
-        TeamDto.Request request = TeamDto.Request.builder()
-                .name(name)
-                .leader(leader)
-                .build();
+        TeamDto.Request request = TeamDto.Request.builder().name(name).leader(leader).build();
 
         Team team = teamService.createTeam(request);
 
@@ -45,49 +42,41 @@ class TeamServiceTest {
     }
 
     @Test
-    void update(){
+    void update() {
         //given
         String name = "team5";
         String leader = "ejw";
         String changeName = "team3";
 
-        Team team = Team.builder()
-                .name(name)
-                .leader(leader)
-                .build();
+        Team team = Team.builder().name(name).leader(leader).build();
 
-        //when
-        TeamDto.Request request = TeamDto.Request.builder()
-                .name(changeName)
-                .build();
+        TeamDto.Request request = TeamDto.Request.builder().name(changeName).build();
 
-        TeamDto.Response response = teamService.updateTeam(name,leader,request);
+        TeamDto.Response response = teamService.updateTeam(name, leader, request);
 
         //then
-        Assertions.assertEquals(changeName,response.getName());
+        Assertions.assertEquals(changeName, response.getName());
     }
 
     @Test
     @Transactional
-    void delete(){
+    void delete() {
         //given
         String name = "team3";
         String leader = "ejw";
 
         //when
-        boolean result = teamService.deleteTeam(name,leader,5L);
+        boolean result = teamService.deleteTeam(name, leader, 5L);
 
         //then
         Assertions.assertTrue(result);
-
     }
 
     @Test
     @Transactional
-    void isAccessUser(){
+    void isAccessUser() {
         //given
         String email = "epsxkf01@naver.com";
-
         teamService.checkUserInformation(email);
     }
 }

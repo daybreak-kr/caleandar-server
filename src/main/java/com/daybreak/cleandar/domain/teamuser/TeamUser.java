@@ -27,11 +27,10 @@ public class TeamUser {
     @JoinColumn(name = "users_id")
     private User user;
 
-    /*@Builder
-    public TeamUser(Long id,){
-       teamid = '5';
-        data = {1,2,3};
-    }*/
-
-
+    @Builder
+    public TeamUser(Team team, User user) {
+        this.team = team;
+        this.user = user;
+        this.team.getTeamUser().add(this);
+    }
 }

@@ -1,13 +1,20 @@
 package com.daybreak.cleandar.domain.user;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.daybreak.cleandar.builder.TeamBuilder;
+import com.daybreak.cleandar.builder.TeamUserBuilder;
+import com.daybreak.cleandar.builder.UserBuilder;
+import com.daybreak.cleandar.domain.team.Team;
+import com.daybreak.cleandar.domain.team.TeamRepository;
+import com.daybreak.cleandar.domain.teamuser.TeamUser;
+import com.daybreak.cleandar.domain.teamuser.TeamUserRepository;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,13 +25,21 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TeamRepository teamRepository;
+
+    @Autowired
+    private TeamUserRepository teamUserRepository;
+
+    private UserBuilder userBuilder = new UserBuilder();
+    private TeamBuilder teamBuilder = new TeamBuilder();
+    private TeamUserBuilder teamUserBuilder = new TeamUserBuilder();
+
+    private User example;
+
     @BeforeEach
     void setUp() {
-        userRepository.save(User.builder()
-                .email("example@example.com")
-                .password(new BCryptPasswordEncoder().encode("qwer1234"))
-                .name("example")
-                .build());
+        example = userRepository.save(userBuilder.build());
     }
 
     @AfterEach
@@ -40,5 +55,22 @@ class UserRepositoryTest {
 
         assertNotNull(user);
         assertEquals(user.getEmail(), email);
+    }
+
+    @Test
+    @DisplayName("팀 유저 검색")
+    void findByTeamUser() {
+
+        User newUser = userRepository.save(userBuilder.withId(2L).withEmail("example22@example.com").build());
+        Team team = teamRepository.save(teamBuilder.build());
+
+        List<TeamUser> teamUsers = new ArrayList<>();
+        teamUsers.add(teamUserBuilder.withTeamAndUser(team, example).build());
+        teamUsers.add(teamUserBuilder.withTeamAndUser(team, newUser).build());
+        teamUserRepository.saveAll(teamUsers);
+
+        List<User> users = userRepository.findByTeamUserIn(teamUserRepository.findByTeam(team));
+
+        Assertions.assertEquals(2, users.size());
     }
 }
