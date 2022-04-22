@@ -1,30 +1,45 @@
 package com.daybreak.cleandar.domain.user;
 
-import com.daybreak.cleandar.security.UserPrincipal;
+import com.daybreak.cleandar.security.UserPrincipalDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
 
-@RestController
-@RequestMapping(path = "/api/users")
-@CrossOrigin(origins = "*")
+@Controller
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final UserPrincipalDetailsService userService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserDto.Response createUser(@RequestBody UserDto.Request request) {
+    @GetMapping("/login")
+    public ModelAndView loginForm() {
+        ModelAndView mav = new ModelAndView("users/login");
+        return mav;
+    }
+
+    @GetMapping("/register")
+    public String registerForm() {
+        return "users/new";
+    }
+
+    @PostMapping("/register")
+    public ModelAndView register(@ModelAttribute UserDto.Request request) {
+        ModelAndView mav = new ModelAndView("redirect:/");
         User user = userService.create(request);
-        return new UserDto.Response(user);
+        mav.addObject("user", new UserDto.Response(user));
+        mav.setStatus(HttpStatus.CREATED);
+        return mav;
     }
 
-    @PutMapping
-    @ResponseStatus(HttpStatus.OK)
-    public UserDto.Response updateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                       @RequestBody UserDto.Request request) {
-        return userService.update(userPrincipal.getUser(), request);
-    }
+    // TODO 미사용 코드
+    // @GetMapping("/users")
+    // public ModelAndView updateForm(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    //     ModelAndView mav = new ModelAndView("user");
+    //     mav.addObject("userDto", new UserDto.Response(userPrincipal.getUser()));
+    //     return mav;
+    // }
 }
