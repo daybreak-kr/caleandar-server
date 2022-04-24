@@ -30,7 +30,7 @@ public class TeamController {
 
     @PostMapping
     public ModelAndView create(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute TeamDto.Request request) {
-        ModelAndView mav = new ModelAndView("teams/index");
+        ModelAndView mav = new ModelAndView("redirect:/");
         request.setLeader(userPrincipal.getUser());
         Optional<Team> team = Optional.ofNullable(teamService.create(request));
         if (team.isPresent()) {
