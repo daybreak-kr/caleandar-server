@@ -15,17 +15,14 @@ import javax.persistence.*;
 @Table(name = "teamsusers")
 public class TeamUser {
 
-    //id , Auto_increment
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //팀id
     @ManyToOne
     @JoinColumn(name = "teams_id")
     private Team team;
 
-    //유저id
     @ManyToOne
     @JoinColumn(name = "users_id")
     private User user;
