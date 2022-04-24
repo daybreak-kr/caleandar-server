@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout.html}">
+<body>
+<div layout:fragment="content">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Leader</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="team : ${teams}">
+            <th scope="row" th:text="${team.id}">id</th>
+            <td th:text="${team.name}">name</td>
+            <td th:text="${team.leader.name}">leader</td>
+        </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/teams/new}" class="btn btn-primary">팀 생성</a>
+</div>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.daybreak.cleandar.domain.team;
 
+import com.daybreak.cleandar.domain.teamuser.TeamUser;
 import com.daybreak.cleandar.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,6 +11,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,6 +35,9 @@ public class Team {
     @ManyToOne
     @JoinColumn(name = "leader_id")
     private User leader;
+
+    @OneToMany(mappedBy = "team")
+    private List<TeamUser> teamUsers = new ArrayList<>();
 
     @Builder
     public Team(String name, User leader) {

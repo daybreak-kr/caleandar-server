@@ -31,6 +31,6 @@ public class TeamUser {
     public TeamUser(Team team, User user) {
         this.team = team;
         this.user = user;
-        this.team.getTeamUser().add(this);
+        this.team.getTeamUsers().add(this);
     }
 }
