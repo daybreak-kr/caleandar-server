@@ -68,7 +68,7 @@ public class ScheduleService {
         List<ScheduleDto.Response> teamSchedules = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        List<TeamUser> teamUser = teamRepository.findById(teamId).get().getTeamUser();
+        List<TeamUser> teamUser = teamRepository.findById(teamId).get().getTeamUsers();
         List<User> users = userRepository.findByTeamUserIn(teamUser);
         List<Schedule> schedules = scheduleRepository.findByUserInAndEndGreaterThanAndStartLessThan(users, startDate, endDate);
 
@@ -99,7 +99,7 @@ public class ScheduleService {
 
         Team team = teamRepository.getById(teamId);
         if (user.getName().equals(team.getLeader())) { // TeamUser에서 leader의 type을 User로 바꾼다면 변경할 부분.
-            for (TeamUser member : team.getTeamUser()) {
+            for (TeamUser member : team.getTeamUsers()) {
                 create(member.getUser(), request);
             }
         }

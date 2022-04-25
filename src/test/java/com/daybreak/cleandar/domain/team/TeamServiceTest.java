@@ -1,7 +1,10 @@
 package com.daybreak.cleandar.domain.team;
 
 import com.daybreak.cleandar.builder.TeamBuilder;
+import com.daybreak.cleandar.builder.TeamUserBuilder;
 import com.daybreak.cleandar.builder.UserBuilder;
+import com.daybreak.cleandar.domain.teamuser.TeamUser;
+import com.daybreak.cleandar.domain.teamuser.TeamUserRepository;
 import com.daybreak.cleandar.domain.user.User;
 import com.daybreak.cleandar.domain.user.UserRepository;
 import org.junit.jupiter.api.*;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -20,9 +24,12 @@ class TeamServiceTest {
     private TeamRepository teamRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TeamUserRepository teamUserRepository;
 
     TeamBuilder teamBuilder = new TeamBuilder();
     UserBuilder userBuilder = new UserBuilder();
+    TeamUserBuilder teamUserBuilder = new TeamUserBuilder();
 
     private Team team;
     private User leader;
@@ -35,6 +42,7 @@ class TeamServiceTest {
 
     @AfterEach
     void tearDown() {
+        teamUserRepository.deleteAll();
         teamRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -43,13 +51,22 @@ class TeamServiceTest {
     @DisplayName("list team")
     void index() {
         User user = userRepository.save(userBuilder.withEmail("example2@example.com").withName("example2").build());
-        Team team_0 = teamRepository.save(teamBuilder.withName("team1").build(leader));
-        Team team_1 = teamRepository.save(teamBuilder.withName("team2").build(leader));
-        Team team_2 = teamRepository.save(teamBuilder.withName("team3").build(user));
 
-        List<Team> teams = teamService.index(leader);
+        List<Team> teamBuilders = new ArrayList<>();
+        teamBuilders.add(teamBuilder.withName("team1").build(leader));
+        teamBuilders.add(teamBuilder.withName("team2").build(leader));
+        teamBuilders.add(teamBuilder.withName("team3").build(user));
 
-        Assertions.assertEquals(teams.size(), 2);
+        List<Team> teams = teamRepository.saveAll(teamBuilders);
+        List<TeamUser> teamUserBuilders = new ArrayList<>();
+        for (Team team : teams) {
+            teamUserBuilders.add(teamUserBuilder.withTeamAndUser(team, team.getLeader()).build());
+        }
+        teamUserRepository.saveAll(teamUserBuilders);
+
+        List<Team> results = teamService.index(leader);
+
+        Assertions.assertEquals(results.size(), 2);
     }
 
     @Test
@@ -59,10 +76,16 @@ class TeamServiceTest {
         TeamDto.Request request = TeamDto.Request.builder().name(team.getName()).leader(leader).build();
 
         Team newTeam = teamService.create(request);
+        teamUserRepository.save(teamUserBuilder.withTeamAndUser(newTeam, leader).build());
+
+        TeamUser teamUser = teamUserRepository.findTeamUserByUser(newTeam.getLeader()).get(0);
 
         Assertions.assertNotNull(newTeam);
         Assertions.assertEquals(request.getName(), newTeam.getName());
         Assertions.assertEquals(request.getLeader().getId(), newTeam.getLeader().getId());
+
+        Assertions.assertEquals(request.getLeader().getId(), teamUser.getUser().getId());
+        Assertions.assertEquals(newTeam.getId(), teamUser.getTeam().getId());
     }
 
     @Test

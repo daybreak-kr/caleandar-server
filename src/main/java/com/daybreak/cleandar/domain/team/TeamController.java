@@ -22,6 +22,14 @@ public class TeamController {
 
     private final TeamService teamService;
 
+    @GetMapping
+    public ModelAndView index(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        ModelAndView mav = new ModelAndView("teams/index");
+        List<Team> teams = teamService.index(userPrincipal.getUser());
+        mav.addObject("teams", teams);
+        return mav;
+    }
+
     @GetMapping("new")
     public ModelAndView teamForm() {
         ModelAndView mav = new ModelAndView("teams/new");
@@ -30,7 +38,7 @@ public class TeamController {
 
     @PostMapping
     public ModelAndView create(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute TeamDto.Request request) {
-        ModelAndView mav = new ModelAndView("redirect:/");
+        ModelAndView mav = new ModelAndView("teams/index");
         request.setLeader(userPrincipal.getUser());
         Optional<Team> team = Optional.ofNullable(teamService.create(request));
         if (team.isPresent()) {

@@ -48,6 +48,15 @@ class TeamControllerTest {
 
     @Test
     @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION, value = UserBuilder.EMAIL)
+    @DisplayName("GET /teams")
+    void index() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/teams"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("teams/index"));
+    }
+
+    @Test
+    @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION, value = UserBuilder.EMAIL)
     @DisplayName("GET /teams/new")
     void teamForm() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/teams/new"))
