@@ -70,6 +70,18 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("show team")
+    void show() {
+        Team team = teamRepository.save(teamBuilder.withName("team1").build(leader));
+        TeamUser teamUser = teamUserRepository.save(teamUserBuilder.withTeamAndUser(team, team.getLeader()).build());
+
+        Team result = teamService.show(team.getId());
+
+        Assertions.assertEquals(result.getId(), team.getId());
+        Assertions.assertEquals(result.getId(), teamUser.getTeam().getId());
+    }
+
+    @Test
     @Transactional
     @DisplayName("create team")
     void create() {

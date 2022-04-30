@@ -4,6 +4,7 @@
       layout:decorate="~{layouts/layout.html}">
 <body>
 <div layout:fragment="content">
+    <h3>팀 목록</h3>
     <table class="table">
         <thead>
         <tr>
@@ -14,7 +15,9 @@
         </thead>
         <tbody>
         <tr th:each="team : ${teams}">
-            <th scope="row" th:text="${team.id}">id</th>
+            <th scope="row">
+                <a th:href="@{|/teams/${team.id}|}" th:text="${team.id}">id</a>
+            </th>
             <td th:text="${team.name}">name</td>
             <td th:text="${team.leader.name}">leader</td>
         </tr>

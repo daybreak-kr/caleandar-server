@@ -2,6 +2,7 @@ package com.daybreak.cleandar.domain.team;
 
 import com.daybreak.cleandar.builder.TeamBuilder;
 import com.daybreak.cleandar.builder.UserBuilder;
+import com.daybreak.cleandar.domain.teamuser.TeamUserRepository;
 import com.daybreak.cleandar.domain.user.User;
 import com.daybreak.cleandar.domain.user.UserRepository;
 import org.junit.jupiter.api.*;
@@ -30,18 +31,25 @@ class TeamControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private TeamUserRepository teamUserRepository;
+
+    @Autowired
     private MockMvc mockMvc;
 
     private UserBuilder userBuilder = new UserBuilder();
     private TeamBuilder teamBuilder = new TeamBuilder();
 
+    Team team = null;
+
     @BeforeEach
     void setUp() {
-        userRepository.save(userBuilder.build());
+        User user = userRepository.save(userBuilder.build());
+        team = teamRepository.save(teamBuilder.withName("team2").build(user));
     }
 
     @AfterEach
     void tearDown() {
+        teamUserRepository.deleteAll();
         teamRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -66,9 +74,18 @@ class TeamControllerTest {
 
     @Test
     @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION, value = UserBuilder.EMAIL)
+    @DisplayName("GET /teams/:id")
+    void show() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/teams/" + team.getId()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("teams/show"));
+    }
+
+    @Test
+    @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION, value = UserBuilder.EMAIL)
     @DisplayName("POST /teams")
     void create() throws Exception {
-        Team team = teamBuilder.build(userBuilder.build());
+        Team team = teamBuilder.withName("test-team").build(userBuilder.build());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/teams")
                         .param("name", team.getName())

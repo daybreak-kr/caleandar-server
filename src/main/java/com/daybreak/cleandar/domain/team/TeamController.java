@@ -5,13 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +23,19 @@ public class TeamController {
         ModelAndView mav = new ModelAndView("teams/index");
         List<Team> teams = teamService.index(userPrincipal.getUser());
         mav.addObject("teams", teams);
+        return mav;
+    }
+
+    @GetMapping("{id}")
+    public ModelAndView show(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("teams/show");
+        Team team = teamService.show(id);
+        if (team == null) {
+            mav.setStatus(HttpStatus.NOT_FOUND);
+        } else {
+            mav.addObject("team", team);
+            mav.setStatus(HttpStatus.OK);
+        }
         return mav;
     }
 
