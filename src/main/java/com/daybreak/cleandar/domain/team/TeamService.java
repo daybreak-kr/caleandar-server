@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +21,11 @@ public class TeamService {
 
     public List<Team> index(User user) {
         return teamUserRepository.findTeamUserByUser(user).stream().map(TeamUser::getTeam).collect(Collectors.toList());
+    }
+
+    public Team show(Long id) {
+        Optional<Team> team = teamRepository.findById(id);
+        return team.orElse(null);
     }
 
     public Team create(@RequestBody TeamDto.Request request) {
