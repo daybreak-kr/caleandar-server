@@ -56,10 +56,8 @@ public class Schedule {
     }
 
     public void update(ScheduleDto.Request request) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        this.start = LocalDateTime.parse(request.getStart(), formatter);
-        this.end = LocalDateTime.parse(request.getEnd(), formatter);
+        this.start = LocalDateTime.parse(request.getStart());
+        this.end = LocalDateTime.parse(request.getEnd());
         this.title = request.getTitle();
         this.description = request.getDescription();
     }

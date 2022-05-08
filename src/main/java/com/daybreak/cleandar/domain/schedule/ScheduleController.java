@@ -56,12 +56,9 @@ public class ScheduleController {
     }
 
     @PostMapping("/new")
-    public ModelAndView createSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request) {
-        ModelAndView mav = new ModelAndView("schedules/show");
-        ScheduleDto.Response schedule = scheduleService.create(principal.getUser(), request);
-        mav.addObject("schedule", schedule);
-        mav.setStatus(HttpStatus.CREATED);
-        return mav;
+    public String createSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request) {
+        String url = "/schedules/" + scheduleService.create(principal.getUser(), request).getId();
+        return "redirect:"+url;
     }
 
     @PostMapping("/team/{id}")
@@ -73,11 +70,11 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/{id}")
-    public ModelAndView deleteSchedule(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long id) {
-        ModelAndView mav = new ModelAndView("schedules/list");
-        mav.addObject("result", scheduleService.delete(principal.getUsername(), id));
-        mav.setStatus(HttpStatus.OK);
-        return mav;
+    public String deleteSchedule(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long id) {
+        if(scheduleService.delete(principal.getUsername(), id))
+            return "redirect:/schedules";
+        else
+            return "삭제 실패";
     }
 
     @PutMapping("/{id}")
