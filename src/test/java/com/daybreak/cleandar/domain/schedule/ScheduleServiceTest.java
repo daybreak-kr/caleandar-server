@@ -78,8 +78,8 @@ public class ScheduleServiceTest {
     public void addSchedule() {
 
         ScheduleDto.Request request = ScheduleDto.Request.builder()
-                .start("2020-10-11 13:00")
-                .end("2020-10-11 16:00")
+                .start("2020-10-11T13:00")
+                .end("2020-10-11T16:00")
                 .title("TEST")
                 .description("This is Test").build();
 
@@ -154,8 +154,8 @@ public class ScheduleServiceTest {
     public void makeAppointment() {
 
         ScheduleDto.Request teamSchedule = ScheduleDto.Request.builder()
-                .start("2022-10-11 13:00")
-                .end("2022-10-11 16:00")
+                .start("2022-10-11T13:00")
+                .end("2022-10-11T16:00")
                 .title("Team Schedule")
                 .description("This is Test").build();
 
@@ -163,7 +163,7 @@ public class ScheduleServiceTest {
 
         List<Schedule> child = scheduleRepository.findByUser(user);
 
-        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), LocalDateTime.parse(teamSchedule.getStart(), formatter));
+        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), LocalDateTime.parse(teamSchedule.getStart()));
         Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), newUser.getSchedules().get(newUser.getSchedules().size() - 1).getStart());
 
 

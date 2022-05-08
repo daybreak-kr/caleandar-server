@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymelef.org"
+      layout:decorate="~{layouts/layout.html}">
+<body>
+<div layout:fragment="content">
+    <h1>일정 상세페이지</h1>
+    <div class="card mb-3" th:object="${schedule}">
+        <div class="card-body">
+            <h5 class="card-title" th:text="*{title}"></h5>
+            <h6 class="card-subtitle mb-2 text-muted" th:text="*{createAt}"></h6>
+            <p class="card-text">
+                시작시간: <b th:text="*{start}"></b>
+                <br/>
+                끝 시간: <b th:text="*{end}"></b>
+            </p>
+            <p th:text="*{description}"></p>
+            <form th:action="@{'/schedules/{id}'(id=${schedule.id})}" th:method="delete">
+                <button type="submit" class="btn btn-danger" id="btn_scheduleDel">delete</button>
+            </form>
+            <button type="button" class="btn btn-secondary" id="btn_scheduleEdit"
+                    th:onclick="'location.href=\''+ @{|/schedules/${schedule.id}/edit|} + '\''">edit
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

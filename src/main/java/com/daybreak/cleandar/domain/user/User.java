@@ -37,7 +37,7 @@ public class User {
 
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<Schedule> schedules = new ArrayList<>();
 
     //찾아볼내용 테이블과 테이블 연결시(N:M)

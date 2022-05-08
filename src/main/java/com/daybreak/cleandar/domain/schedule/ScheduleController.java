@@ -40,7 +40,7 @@ public class ScheduleController {
 
     @GetMapping("/{id}")
     public ModelAndView getSchedule(@PathVariable Long id) {
-        ModelAndView mav = new ModelAndView("schedules/detail");
+        ModelAndView mav = new ModelAndView("schedules/show");
         mav.addObject("schedule", scheduleService.getOne(id));
         mav.setStatus(HttpStatus.OK);
         return mav;
@@ -57,7 +57,7 @@ public class ScheduleController {
 
     @PostMapping("/new")
     public ModelAndView createSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request) {
-        ModelAndView mav = new ModelAndView("schedules/detail");
+        ModelAndView mav = new ModelAndView("schedules/show");
         ScheduleDto.Response schedule = scheduleService.create(principal.getUser(), request);
         mav.addObject("schedule", schedule);
         mav.setStatus(HttpStatus.CREATED);
@@ -66,7 +66,7 @@ public class ScheduleController {
 
     @PostMapping("/team/{id}")
     public ModelAndView createTeamSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request, @PathVariable(value = "id") Long teamId) {
-        ModelAndView mav = new ModelAndView("teams/detail");
+        ModelAndView mav = new ModelAndView("teams/show");
         mav.addObject("teamSchedule", scheduleService.createTeamSchedule(principal.getUser(), request, teamId));
         mav.setStatus(HttpStatus.CREATED);
         return mav;
@@ -82,7 +82,7 @@ public class ScheduleController {
 
     @PutMapping("/{id}")
     public ModelAndView updateSchedule(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long id, ScheduleDto.Request request) {
-        ModelAndView mav = new ModelAndView("schedules/detail");
+        ModelAndView mav = new ModelAndView("schedules/show");
         ScheduleDto.Response schedule = scheduleService.update(principal.getUsername(), request);
         mav.addObject("schedule", schedule);
         mav.setStatus(HttpStatus.OK);
