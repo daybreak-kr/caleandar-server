@@ -15,7 +15,7 @@
                 <b th:unless="${#strings.equals(#strings.arraySplit(schedule.start,' ')[0],#strings.arraySplit(schedule.end,' ')[0])}"
                    th:text="*{end}"></b>
             </p>
-            <p th:text="*{description}"> 내용: </p>
+            내용: <p th:text="*{description}"></p>
             <form th:action="@{'/schedules/{id}'(id=${schedule.id})}" th:method="delete">
                 <button type="submit" class="btn btn-danger" id="btn_scheduleDel">delete</button>
             </form>
