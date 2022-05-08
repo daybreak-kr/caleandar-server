@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymelef.org"
+      layout:decorate="~{layouts/layout.html}">
+<body>
+<div layout:fragment="content">
+    <h1>일정 상세페이지</h1>
+    <div class="card mb-3" th:object="${schedule}">
+        <div class="card-body">
+            <h5 class="card-title" th:text="*{title}"></h5>
+            <p class="card-text">
+                기간: <b th:text="*{start}"></b> ~
+                <b th:if="${#strings.equals(#strings.arraySplit(schedule.start,' ')[0],#strings.arraySplit(schedule.end,' ')[0])}"
+                   th:text="${#strings.arraySplit(schedule.end,' ')[1]}"></b>
+                <b th:unless="${#strings.equals(#strings.arraySplit(schedule.start,' ')[0],#strings.arraySplit(schedule.end,' ')[0])}"
+                   th:text="*{end}"></b>
+            </p>
+            내용: <p th:text="*{description}"></p>
+            <form th:action="@{'/schedules/{id}'(id=${schedule.id})}" th:method="delete">
+                <button type="submit" class="btn btn-danger" id="btn_scheduleDel">delete</button>
+            </form>
+            <button type="button" class="btn btn-secondary" id="btn_scheduleEdit"
+                    th:onclick="'location.href=\''+ @{|/schedules/${schedule.id}/edit|} + '\''">edit
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -133,7 +133,7 @@ public class ScheduleControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/schedules/{id}", schedule.getId()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.view().name("schedules/detail"));
+                .andExpect(MockMvcResultMatchers.view().name("schedules/show"));
     }
 
     @Test
@@ -165,8 +165,8 @@ public class ScheduleControllerTest {
 
         String title = "abc";
         String description = "This is Test";
-        String start = "2020-10-11 13:00";
-        String end = "2020-10-12 13:00";
+        String start = "2020-10-11T13:00";
+        String end = "2020-10-12T13:00";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/schedules/new")
                         .param("title", title)
@@ -175,8 +175,7 @@ public class ScheduleControllerTest {
                         .param("end", end)
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.view().name("schedules/detail"));
+                .andExpect(MockMvcResultMatchers.status().isFound());
     }
 
     @Test
@@ -186,8 +185,8 @@ public class ScheduleControllerTest {
     public void createTeamSchedule() throws Exception {
         String title = "abc";
         String description = "This is Test";
-        String start = "2020-10-11 13:00";
-        String end = "2020-10-12 13:00";
+        String start = "2020-10-11T13:00";
+        String end = "2020-10-12T13:00";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/schedules/team/{id}", team.getId())
                         .param("title", title)
@@ -197,7 +196,7 @@ public class ScheduleControllerTest {
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.view().name("teams/detail"));
+                .andExpect(MockMvcResultMatchers.view().name("teams/show"));
     }
 
     @Test
@@ -206,12 +205,10 @@ public class ScheduleControllerTest {
     @DisplayName("DELETE /schedules")
     public void delete() throws Exception {
 
-        // 일정을 작성한 유저가 삭제
         mockMvc.perform(MockMvcRequestBuilders.delete("/schedules/{id}", schedule.getId())
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.view().name("schedules/list"));
+                .andExpect(MockMvcResultMatchers.status().isFound())
+                .andDo(print());
     }
 
     @Test
@@ -222,8 +219,8 @@ public class ScheduleControllerTest {
 
         // 수정할 내용
         String newTitle = "NEW TEST";
-        String newStartTime = "2022-02-22 13:00";
-        String newEndTime = "2022-02-22 14:00";
+        String newStartTime = "2022-02-22T13:00";
+        String newEndTime = "2022-02-22T14:00";
         String newDescription = "ALL NEW";
 
         mockMvc.perform(MockMvcRequestBuilders.put("/schedules/{id}", schedule.getId())
@@ -234,6 +231,6 @@ public class ScheduleControllerTest {
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.view().name("schedules/detail"));
+                .andExpect(MockMvcResultMatchers.view().name("schedules/show"));
     }
 }

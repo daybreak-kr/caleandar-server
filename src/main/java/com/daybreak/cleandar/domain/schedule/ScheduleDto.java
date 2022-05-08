@@ -32,8 +32,8 @@ public class ScheduleDto {
 
         public Schedule toEntity(User user) {
             return Schedule.builder()
-                    .start(LocalDateTime.parse(start, formatter))
-                    .end(LocalDateTime.parse(end, formatter))
+                    .start(LocalDateTime.parse(start))
+                    .end(LocalDateTime.parse(end))
                     .title(title)
                     .description(description)
                     .user(user)
