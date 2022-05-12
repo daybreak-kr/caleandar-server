@@ -146,8 +146,8 @@ public class ScheduleControllerTest {
         LocalDateTime end = LocalDateTime.parse("2020-10-11 20:00", formatter);
         scheduleRepository.save(scheduleBuilder.withStartAndEnd(start, end).withUser(newUser).build());
 
-        String startDate = "2020-10-11 14:00";
-        String endDate = "2020-10-11 21:00";
+        String startDate = "2020-10-11T14:00";
+        String endDate = "2020-10-11T21:00";
 
         mockMvc.perform(MockMvcRequestBuilders.get("/schedules/candidates")
                         .param("start", startDate)

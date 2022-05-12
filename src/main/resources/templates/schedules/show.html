@@ -9,11 +9,11 @@
         <div class="card-body">
             <h5 class="card-title" th:text="*{title}"></h5>
             <p class="card-text">
-                기간: <b th:text="*{start}"></b> ~
-                <b th:if="${#strings.equals(#strings.arraySplit(schedule.start,' ')[0],#strings.arraySplit(schedule.end,' ')[0])}"
-                   th:text="${#strings.arraySplit(schedule.end,' ')[1]}"></b>
-                <b th:unless="${#strings.equals(#strings.arraySplit(schedule.start,' ')[0],#strings.arraySplit(schedule.end,' ')[0])}"
-                   th:text="*{end}"></b>
+                기간: <b th:text="${#strings.replace(schedule.start,'T',' ')}"></b> ~
+                <b th:if="${#strings.equals(#strings.arraySplit(schedule.start,'T')[0],#strings.arraySplit(schedule.end,'T')[0])}"
+                   th:text="${#strings.arraySplit(schedule.end,'T')[1]}"></b>
+                <b th:unless="${#strings.equals(#strings.arraySplit(schedule.start,'T')[0],#strings.arraySplit(schedule.end,'T')[0])}"
+                   th:text="${#strings.replace(schedule.end,'T',' ')}"></b>
             </p>
             내용: <p th:text="*{description}"></p>
             <form th:action="@{'/schedules/{id}'(id=${schedule.id})}" th:method="delete">

@@ -25,8 +25,11 @@ public class ScheduleController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editScheduleForm(@PathVariable Long id) {
-        return "schedules/edit";
+    public ModelAndView editScheduleForm(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("schedules/edit");
+        mav.addObject("schedule", scheduleService.getOne(id));
+        mav.setStatus(HttpStatus.OK);
+        return mav;
     }
 
     @GetMapping("")
@@ -49,8 +52,7 @@ public class ScheduleController {
     @GetMapping("/candidates")
     public ModelAndView getCandidates(String start, String end, Long teamId) {
         ModelAndView mav = new ModelAndView("teams/candidates");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        mav.addObject("candidates", scheduleService.getCandidateSchedules(LocalDateTime.parse(start, formatter), LocalDateTime.parse(end, formatter), teamId));
+        mav.addObject("candidates", scheduleService.getCandidateSchedules(LocalDateTime.parse(start), LocalDateTime.parse(end), teamId));
         mav.setStatus(HttpStatus.OK);
         return mav;
     }
@@ -58,7 +60,7 @@ public class ScheduleController {
     @PostMapping("/new")
     public String createSchedule(@AuthenticationPrincipal UserPrincipal principal, ScheduleDto.Request request) {
         String url = "/schedules/" + scheduleService.create(principal.getUser(), request).getId();
-        return "redirect:"+url;
+        return "redirect:" + url;
     }
 
     @PostMapping("/team/{id}")
@@ -71,7 +73,7 @@ public class ScheduleController {
 
     @DeleteMapping("/{id}")
     public String deleteSchedule(@AuthenticationPrincipal UserPrincipal principal, @PathVariable Long id) {
-        if(scheduleService.delete(principal.getUsername(), id))
+        if (scheduleService.delete(principal.getUsername(), id))
             return "redirect:/schedules";
         else
             return "삭제 실패";

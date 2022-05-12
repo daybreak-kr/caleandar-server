@@ -76,7 +76,7 @@ public class ScheduleService {
             candidate.add(new ScheduleDto.Response(schedule));
         }
 
-        if (startDate.isBefore(LocalDateTime.parse(candidate.get(0).getStart(), formatter))) {
+        if (startDate.isBefore(LocalDateTime.parse(candidate.get(0).getStart()))) {
             teamSchedules.add(new ScheduleDto.Response(startDate.format(formatter), candidate.get(0).getStart()));
         }
 
@@ -87,7 +87,7 @@ public class ScheduleService {
             teamSchedules.add(new ScheduleDto.Response(candidate.get(i - 1).getEnd(), candidate.get(i).getStart()));
         }
 
-        if (LocalDateTime.parse(candidate.get(candidate.size() - 1).getEnd(), formatter).isBefore(endDate)) {
+        if (LocalDateTime.parse(candidate.get(candidate.size() - 1).getEnd()).isBefore(endDate)) {
             teamSchedules.add(new ScheduleDto.Response(candidate.get(candidate.size() - 1).getEnd(), endDate.format(formatter)));
         }
 
