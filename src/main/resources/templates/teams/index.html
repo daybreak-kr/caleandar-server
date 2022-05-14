@@ -11,15 +11,19 @@
             <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">Leader</th>
+            <th scope="col">Action</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="team : ${teams}">
-            <th scope="row">
+            <th class="align-middle" scope="row">
                 <a th:href="@{|/teams/${team.id}|}" th:text="${team.id}">id</a>
             </th>
-            <td th:text="${team.name}">name</td>
-            <td th:text="${team.leader.name}">leader</td>
+            <td class="align-middle" th:text="${team.name}">name</td>
+            <td class="align-middle" th:text="${team.leader.name}">leader</td>
+            <td>
+                <a th:href="@{'/teams/' + ${team.id} + '/edit'}" class="btn btn-warning">수정</a>
+            </td>
         </tr>
         </tbody>
     </table>

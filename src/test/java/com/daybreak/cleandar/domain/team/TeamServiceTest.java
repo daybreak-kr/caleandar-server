@@ -88,7 +88,6 @@ class TeamServiceTest {
         TeamDto.Request request = TeamDto.Request.builder().name(team.getName()).leader(leader).build();
 
         Team newTeam = teamService.create(request);
-        teamUserRepository.save(teamUserBuilder.withTeamAndUser(newTeam, leader).build());
 
         TeamUser teamUser = teamUserRepository.findTeamUserByUser(newTeam.getLeader()).get(0);
 
@@ -113,5 +112,21 @@ class TeamServiceTest {
         Assertions.assertEquals(request.getLeader().getId(), newTeam.getLeader().getId());
 
         Assertions.assertNull(newTeam2);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("update team")
+    void update() {
+        TeamDto.Request request = TeamDto.Request.builder().name(team.getName()).leader(leader).build();
+        Team team = teamService.create(request);
+        request.setId(team.getId());
+
+        Team updateTeam = teamService.update(request);
+
+        Assertions.assertNotNull(updateTeam);
+        Assertions.assertEquals(request.getId(), updateTeam.getId());
+        Assertions.assertEquals(request.getName(), updateTeam.getName());
+        Assertions.assertEquals(request.getLeader().getId(), updateTeam.getLeader().getId());
     }
 }

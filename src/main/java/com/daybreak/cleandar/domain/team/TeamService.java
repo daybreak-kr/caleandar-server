@@ -37,4 +37,14 @@ public class TeamService {
             return null;
         }
     }
+
+    public Team update(@RequestBody TeamDto.Request request) {
+        try {
+            Team team = teamRepository.findById(request.getId()).orElseThrow(() -> new IllegalArgumentException("Not Found Entity"));
+            team.update(request.getName());
+            return teamRepository.save(team);
+        } catch (IllegalArgumentException exception) {
+            return null;
+        }
+    }
 }

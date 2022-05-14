@@ -58,4 +58,30 @@ public class TeamController {
         }
         return mav;
     }
+
+    @PutMapping("{id}")
+    public ModelAndView update(@ModelAttribute TeamDto.Request request) {
+        ModelAndView mav = new ModelAndView("teams/show");
+        Team team = teamService.update(request);
+        if (team == null) {
+            mav.setStatus(HttpStatus.BAD_REQUEST);
+        } else {
+            mav.addObject("team", team);
+            mav.setStatus(HttpStatus.OK);
+        }
+        return mav;
+    }
+
+    @GetMapping("{id}/edit")
+    public ModelAndView teamEditForm(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("teams/edit");
+        Team team = teamService.show(id);
+        if (team == null) {
+            mav.setStatus(HttpStatus.NOT_FOUND);
+        } else {
+            mav.addObject("team", team);
+            mav.setStatus(HttpStatus.OK);
+        }
+        return mav;
+    }
 }

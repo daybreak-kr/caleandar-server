@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymelef.org"
+      layout:decorate="~{layouts/layout.html}">
+<body>
+<div class="col-md-4 col-sm-12 my-3 mx-auto" layout:fragment="content">
+    <div class="card p-3">
+        <form method="POST" th:action="@{'/teams/' + ${team.id}}" th:object="${team}">
+            <input type="hidden" name="_method" th:value="PUT"/>
+            <h1 class="h3 mb-3 text-center">팀 수정</h1>
+            <input type="hidden" name="id" th:value="${team.id}"/>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingInputName" placeholder="이름" name="name" th:value="${team.name}"/>
+                <label for="floatingInputName">이름</label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">팀 수정</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
