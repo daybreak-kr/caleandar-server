@@ -120,13 +120,16 @@ class TeamServiceTest {
     void update() {
         TeamDto.Request request = TeamDto.Request.builder().name(team.getName()).leader(leader).build();
         Team team = teamService.create(request);
+
+        String newName = "new Team";
         request.setId(team.getId());
+        request.setName(newName);
 
         Team updateTeam = teamService.update(request);
 
         Assertions.assertNotNull(updateTeam);
         Assertions.assertEquals(request.getId(), updateTeam.getId());
-        Assertions.assertEquals(request.getName(), updateTeam.getName());
+        Assertions.assertEquals(newName, updateTeam.getName());
         Assertions.assertEquals(request.getLeader().getId(), updateTeam.getLeader().getId());
     }
 }

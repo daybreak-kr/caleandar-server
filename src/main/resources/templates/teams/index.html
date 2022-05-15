@@ -22,7 +22,7 @@
             <td class="align-middle" th:text="${team.name}">name</td>
             <td class="align-middle" th:text="${team.leader.name}">leader</td>
             <td>
-                <a th:href="@{'/teams/' + ${team.id} + '/edit'}" class="btn btn-warning">수정</a>
+                <a th:href="@{|/teams/${team.id}/edit|}" class="btn btn-warning">수정</a>
             </td>
         </tr>
         </tbody>

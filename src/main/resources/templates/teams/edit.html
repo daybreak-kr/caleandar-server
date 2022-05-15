@@ -5,8 +5,7 @@
 <body>
 <div class="col-md-4 col-sm-12 my-3 mx-auto" layout:fragment="content">
     <div class="card p-3">
-        <form method="POST" th:action="@{'/teams/' + ${team.id}}" th:object="${team}">
-            <input type="hidden" name="_method" th:value="PUT"/>
+        <form th:method="PUT" th:action="@{|/teams/${team.id}|}" th:object="${team}">
             <h1 class="h3 mb-3 text-center">팀 수정</h1>
             <input type="hidden" name="id" th:value="${team.id}"/>
             <div class="form-floating mb-3">
