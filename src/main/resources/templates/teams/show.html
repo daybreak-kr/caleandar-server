@@ -6,7 +6,8 @@
 <div layout:fragment="content">
     <div class="card mb-2">
         <div class="card-body">
-            <h5 class="card-title" th:text="|${team.getName()}(${team.getTeamUsers().size()})|">title</h5>
+            <h5 class="card-title" th:text="|${team.getName()} - (${team.getTeamUsers().size()})|">title</h5>
+            <a th:href="@{|/teams/${team.id}/edit|}" class="btn btn-warning">수정</a>
         </div>
     </div>
     <h3>팀원 목록</h3>

@@ -83,6 +83,15 @@ class TeamControllerTest {
 
     @Test
     @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION, value = UserBuilder.EMAIL)
+    @DisplayName("GET /teams/:id/edit")
+    void edit() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/teams/" + team.getId() + "/edit"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("teams/edit"));
+    }
+
+    @Test
+    @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION, value = UserBuilder.EMAIL)
     @DisplayName("POST /teams")
     void create() throws Exception {
         Team team = teamBuilder.withName("test-team").build(userBuilder.build());
@@ -91,5 +100,17 @@ class TeamControllerTest {
                         .param("name", team.getName())
                         .with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
+    }
+
+    @Test
+    @WithUserDetails(setupBefore = TestExecutionEvent.TEST_EXECUTION, value = UserBuilder.EMAIL)
+    @DisplayName("PUT /teams/:id")
+    void update() throws Exception {
+        String newName = "new-team";
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/teams/" + team.getId())
+                        .param("name", newName)
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

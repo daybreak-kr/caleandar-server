@@ -44,4 +44,8 @@ public class Team {
         this.name = name;
         this.leader = leader;
     }
+
+    public void update(String name) {
+        this.name = name;
+    }
 }
