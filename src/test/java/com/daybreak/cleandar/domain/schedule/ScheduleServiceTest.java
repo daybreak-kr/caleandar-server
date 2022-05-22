@@ -78,8 +78,8 @@ public class ScheduleServiceTest {
     public void addSchedule() {
 
         ScheduleDto.Request request = ScheduleDto.Request.builder()
-                .start("2020-10-11 13:00")
-                .end("2020-10-11 16:00")
+                .start("2020-10-11T13:00")
+                .end("2020-10-11T16:00")
                 .title("TEST")
                 .description("This is Test").build();
 
@@ -133,7 +133,7 @@ public class ScheduleServiceTest {
         Schedule newSchedule = scheduleRepository.save(scheduleBuilder.withId(2L).withStartAndEnd(start, end).withUser(user).build());
 
 
-        List<ScheduleDto.Response> list = scheduleService.getAll(user.getEmail());
+        List<ScheduleDto.Response> list = scheduleService.getSchedules(user.getEmail());
 
         Assertions.assertEquals(2, list.size());
         Assertions.assertEquals(list.get(0).getId(), schedule.getId());
@@ -144,7 +144,7 @@ public class ScheduleServiceTest {
     @Transactional
     @DisplayName("get one schedule")
     public void getOne() {
-        ScheduleDto.Response selectSchedule = scheduleService.getOne(schedule.getId());
+        ScheduleDto.Response selectSchedule = scheduleService.getSchedule(schedule.getId());
         Assertions.assertEquals(selectSchedule.getId(), schedule.getId());
     }
 
@@ -154,8 +154,8 @@ public class ScheduleServiceTest {
     public void makeAppointment() {
 
         ScheduleDto.Request teamSchedule = ScheduleDto.Request.builder()
-                .start("2022-10-11 13:00")
-                .end("2022-10-11 16:00")
+                .start("2022-10-11T13:00")
+                .end("2022-10-11T16:00")
                 .title("Team Schedule")
                 .description("This is Test").build();
 
@@ -163,7 +163,7 @@ public class ScheduleServiceTest {
 
         List<Schedule> child = scheduleRepository.findByUser(user);
 
-        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), LocalDateTime.parse(teamSchedule.getStart(), formatter));
+        Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), LocalDateTime.parse(teamSchedule.getStart()));
         Assertions.assertEquals(user.getSchedules().get(user.getSchedules().size() - 1).getStart(), newUser.getSchedules().get(newUser.getSchedules().size() - 1).getStart());
 
 

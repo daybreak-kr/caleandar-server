@@ -2,9 +2,31 @@
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymelef.org"
       layout:decorate="~{layouts/layout.html}">
-<head>
-    <div th:replace="layouts/head.html :: headFragment"></div>
-</head>
 <body>
+<div class="col-md-6 col-sm-12 my-3 mx-auto" layout:fragment="content">
+    <form method="POST" th:action="@{/schedules/new}">
+        <h1>일정 생성</h1>
+        <div class="form-floating mb-3">
+            <input type="datetime-local" class="form-control" id="floatingInputStart" placeholder="시작 시간"
+                   name="start" required/>
+            <label for="floatingInputStart">시작 시간</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="datetime-local" class="form-control" id="floatingInputEnd" placeholder="끝 시간"
+                   name="end" required/>
+            <label for="floatingInputEnd">끝 시간</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="floatingInputTitle" placeholder="제목"
+                   name="title" required/>
+            <label for="floatingInputTitle">제목</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="floatingInputDescription" placeholder="내용" name="description"/>
+            <label for="floatingInputDescription">내용</label>
+        </div>
+        <button type="submit" class="btn btn-primary">add</button>
+    </form>
+</div>
 </body>
 </html>

@@ -32,8 +32,8 @@ public class ScheduleDto {
 
         public Schedule toEntity(User user) {
             return Schedule.builder()
-                    .start(LocalDateTime.parse(start, formatter))
-                    .end(LocalDateTime.parse(end, formatter))
+                    .start(LocalDateTime.parse(start))
+                    .end(LocalDateTime.parse(end))
                     .title(title)
                     .description(description)
                     .user(user)
@@ -56,8 +56,8 @@ public class ScheduleDto {
 
         public Response(Schedule schedule) {
             id = schedule.getId();
-            start = schedule.getStart().format(formatter);
-            end = schedule.getEnd().format(formatter);
+            start = schedule.getStart().toString();
+            end = schedule.getEnd().toString();
             createAt = schedule.getCreatedAt().format(formatter);
             updateAt = schedule.getUpdatedAt().format(formatter);
             title = schedule.getTitle();
