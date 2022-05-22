@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -50,15 +51,17 @@ public class ScheduleService {
         return null;
     }
 
-    public List<ScheduleDto.Response> getAll(String email) {
+    public List<ScheduleDto.Response> getSchedules(String email) {
         List<ScheduleDto.Response> list = new ArrayList<>();
         for (Schedule schedule : userRepository.findUserByEmail(email).getSchedules()) {
             list.add(new ScheduleDto.Response(schedule));
         }
+        list.sort(Comparator.comparing(ScheduleDto.Response::getStart));
+        list.sort(Comparator.comparing(ScheduleDto.Response::getEnd));
         return list;
     }
 
-    public ScheduleDto.Response getOne(Long id) {
+    public ScheduleDto.Response getSchedule(Long id) {
         return new ScheduleDto.Response(scheduleRepository.findById(id).orElse(null));
     }
 

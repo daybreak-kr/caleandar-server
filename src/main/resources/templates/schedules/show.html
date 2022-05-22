@@ -16,12 +16,14 @@
                    th:text="${#strings.replace(schedule.end,'T',' ')}"></b>
             </p>
             내용: <p th:text="*{description}"></p>
-            <form th:action="@{'/schedules/{id}'(id=${schedule.id})}" th:method="delete">
-                <button type="submit" class="btn btn-danger" id="btn_scheduleDel">delete</button>
-            </form>
-            <button type="button" class="btn btn-secondary" id="btn_scheduleEdit"
-                    th:onclick="'location.href=\''+ @{|/schedules/${schedule.id}/edit|} + '\''">edit
-            </button>
+            <div class="d-grid gap-2 d-sm-flex">
+                <button type="button" class="btn btn-secondary" id="btn_scheduleEdit"
+                        th:onclick="'location.href=\''+ @{|/schedules/${schedule.id}/edit|} + '\''">edit
+                </button>
+                <form th:action="@{'/schedules/{id}'(id=${schedule.id})}" th:method="delete">
+                    <button type="submit" class="btn btn-danger" id="btn_scheduleDel">delete</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
