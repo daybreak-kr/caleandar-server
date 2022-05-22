@@ -133,7 +133,7 @@ public class ScheduleServiceTest {
         Schedule newSchedule = scheduleRepository.save(scheduleBuilder.withId(2L).withStartAndEnd(start, end).withUser(user).build());
 
 
-        List<ScheduleDto.Response> list = scheduleService.getAll(user.getEmail());
+        List<ScheduleDto.Response> list = scheduleService.getSchedules(user.getEmail());
 
         Assertions.assertEquals(2, list.size());
         Assertions.assertEquals(list.get(0).getId(), schedule.getId());
@@ -144,7 +144,7 @@ public class ScheduleServiceTest {
     @Transactional
     @DisplayName("get one schedule")
     public void getOne() {
-        ScheduleDto.Response selectSchedule = scheduleService.getOne(schedule.getId());
+        ScheduleDto.Response selectSchedule = scheduleService.getSchedule(schedule.getId());
         Assertions.assertEquals(selectSchedule.getId(), schedule.getId());
     }
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -50,15 +51,17 @@ public class ScheduleService {
         return null;
     }
 
-    public List<ScheduleDto.Response> getAll(String email) {
+    public List<ScheduleDto.Response> getSchedules(String email) {
         List<ScheduleDto.Response> list = new ArrayList<>();
         for (Schedule schedule : userRepository.findUserByEmail(email).getSchedules()) {
             list.add(new ScheduleDto.Response(schedule));
         }
+        list.sort(Comparator.comparing(ScheduleDto.Response::getStart));
+        list.sort(Comparator.comparing(ScheduleDto.Response::getEnd));
         return list;
     }
 
-    public ScheduleDto.Response getOne(Long id) {
+    public ScheduleDto.Response getSchedule(Long id) {
         return new ScheduleDto.Response(scheduleRepository.findById(id).orElse(null));
     }
 
@@ -76,7 +79,7 @@ public class ScheduleService {
             candidate.add(new ScheduleDto.Response(schedule));
         }
 
-        if (startDate.isBefore(LocalDateTime.parse(candidate.get(0).getStart(), formatter))) {
+        if (startDate.isBefore(LocalDateTime.parse(candidate.get(0).getStart()))) {
             teamSchedules.add(new ScheduleDto.Response(startDate.format(formatter), candidate.get(0).getStart()));
         }
 
@@ -87,7 +90,7 @@ public class ScheduleService {
             teamSchedules.add(new ScheduleDto.Response(candidate.get(i - 1).getEnd(), candidate.get(i).getStart()));
         }
 
-        if (LocalDateTime.parse(candidate.get(candidate.size() - 1).getEnd(), formatter).isBefore(endDate)) {
+        if (LocalDateTime.parse(candidate.get(candidate.size() - 1).getEnd()).isBefore(endDate)) {
             teamSchedules.add(new ScheduleDto.Response(candidate.get(candidate.size() - 1).getEnd(), endDate.format(formatter)));
         }
 

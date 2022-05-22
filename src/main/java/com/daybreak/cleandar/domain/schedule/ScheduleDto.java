@@ -56,8 +56,8 @@ public class ScheduleDto {
 
         public Response(Schedule schedule) {
             id = schedule.getId();
-            start = schedule.getStart().format(formatter);
-            end = schedule.getEnd().format(formatter);
+            start = schedule.getStart().toString();
+            end = schedule.getEnd().toString();
             createAt = schedule.getCreatedAt().format(formatter);
             updateAt = schedule.getUpdatedAt().format(formatter);
             title = schedule.getTitle();

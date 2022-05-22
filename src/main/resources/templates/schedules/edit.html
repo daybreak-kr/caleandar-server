@@ -3,8 +3,32 @@
       xmlns:th="http://www.thymelef.org"
       layout:decorate="~{layouts/layout.html}">
 <body>
-<div layout:fragment="content">
-    <h1>UPDATE</h1>
+<div class="col-md-6 col-sm-12 my-3 mx-auto" layout:fragment="content">
+    <form th:action="@{'/schedules/{id}'(id=${schedule.id})}" th:method="put">
+        <h1>일정 수정</h1>
+        <input type="hidden" name="id" th:attr="value=${schedule.id}">
+        <div class="form-floating mb-3">
+            <input type="datetime-local" class="form-control" id="floatingInputStart" placeholder="시작 시간"
+                   name="start" th:attr="value=${schedule.start}" required/>
+            <label for="floatingInputStart">시작 시간</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="datetime-local" class="form-control" id="floatingInputEnd" placeholder="끝 시간"
+                   name="end" th:attr="value=${schedule.end}" required/>
+            <label for="floatingInputEnd">끝 시간</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="floatingInputTitle" placeholder="제목"
+                   name="title" th:attr="value=${schedule.title}" required/>
+            <label for="floatingInputTitle">제목</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="floatingInputDescription" placeholder="내용"
+                   name="description" th:attr="value=${schedule.description}"/>
+            <label for="floatingInputDescription">내용</label>
+        </div>
+        <button type="submit" class="btn btn-primary">update</button>
+    </form>
 </div>
 </body>
 </html>
