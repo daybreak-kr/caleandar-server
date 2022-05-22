@@ -46,30 +46,24 @@ public class TeamController {
     }
 
     @PostMapping
-    public ModelAndView create(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute TeamDto.Request request) {
-        ModelAndView mav = new ModelAndView("teams/index");
+    public String create(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute TeamDto.Request request) {
         request.setLeader(userPrincipal.getUser());
         Optional<Team> team = Optional.ofNullable(teamService.create(request));
         if (team.isPresent()) {
-            mav.addObject("team", new TeamDto.Response(team.get()));
-            mav.setStatus(HttpStatus.CREATED);
+            return "redirect:teams";
         } else {
-            mav.setStatus(HttpStatus.BAD_REQUEST);
+            return "redirect:new";
         }
-        return mav;
     }
 
     @PutMapping("{id}")
-    public ModelAndView update(@ModelAttribute TeamDto.Request request) {
-        ModelAndView mav = new ModelAndView("teams/show");
+    public String update(@ModelAttribute TeamDto.Request request) {
         Team team = teamService.update(request);
         if (team == null) {
-            mav.setStatus(HttpStatus.BAD_REQUEST);
+            return "redirect:edit";
         } else {
-            mav.addObject("team", team);
-            mav.setStatus(HttpStatus.OK);
+            return "redirect:" + team.getId();
         }
-        return mav;
     }
 
     @GetMapping("{id}/edit")
