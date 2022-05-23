@@ -14,15 +14,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-//테이블과 맵핑
 @Entity
 @Getter
-//무분별한 객체 생성 방지
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//테이블의 이름 설정
-@Table(name = "teams")
+@Table(name = "teams", uniqueConstraints = {@UniqueConstraint(columnNames = {"leader_id", "name"})})
 public class Team {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,30 +26,26 @@ public class Team {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private String leader;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "team")
-    private List<TeamUser> teamUser = new ArrayList<>();
-
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "leader_id")
+    private User leader;
+
+    @OneToMany(mappedBy = "team")
+    private List<TeamUser> teamUsers = new ArrayList<>();
 
     @Builder
-    public Team(String name, String leader){
+    public Team(String name, User leader) {
         this.name = name;
         this.leader = leader;
     }
 
-    public void updateTeam(String name){
+    public void update(String name) {
         this.name = name;
     }
-
 }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout.html}">
+<body>
+<div layout:fragment="content">
+    <h3>팀 목록</h3>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Leader</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="team : ${teams}">
+            <th class="align-middle" scope="row">
+                <a th:href="@{|/teams/${team.id}|}" th:text="${team.id}">id</a>
+            </th>
+            <td class="align-middle" th:text="${team.name}">name</td>
+            <td class="align-middle" th:text="${team.leader.name}">leader</td>
+            <td>
+                <a th:href="@{|/teams/${team.id}/edit|}" class="btn btn-warning">수정</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/teams/new}" class="btn btn-primary">팀 생성</a>
+</div>
+</body>
+</html>

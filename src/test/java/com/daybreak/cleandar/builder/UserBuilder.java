@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserBuilder {
+    public static final String EMAIL = "example@example.com";
     private Long id = 1L;
-    private String email = "example@example.com";
+    private String email = EMAIL;
     private String password = "qwer1234";
     private String name = "example";
     private List<Schedule> schedules = new ArrayList<>();
@@ -22,6 +23,11 @@ public class UserBuilder {
 
     public UserBuilder withEmail(String email) {
         this.email = email;
+        return this;
+    }
+
+    public UserBuilder withName(String name) {
+        this.name = name;
         return this;
     }
 
