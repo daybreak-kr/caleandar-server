@@ -45,6 +45,19 @@ public class TeamController {
         return mav;
     }
 
+    @GetMapping("{id}/edit")
+    public ModelAndView teamEditForm(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("teams/edit");
+        Team team = teamService.show(id);
+        if (team == null) {
+            mav.setStatus(HttpStatus.NOT_FOUND);
+        } else {
+            mav.addObject("team", team);
+            mav.setStatus(HttpStatus.OK);
+        }
+        return mav;
+    }
+
     @PostMapping
     public String create(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute TeamDto.Request request) {
         request.setLeader(userPrincipal.getUser());
@@ -66,16 +79,9 @@ public class TeamController {
         }
     }
 
-    @GetMapping("{id}/edit")
-    public ModelAndView teamEditForm(@PathVariable Long id) {
-        ModelAndView mav = new ModelAndView("teams/edit");
-        Team team = teamService.show(id);
-        if (team == null) {
-            mav.setStatus(HttpStatus.NOT_FOUND);
-        } else {
-            mav.addObject("team", team);
-            mav.setStatus(HttpStatus.OK);
-        }
-        return mav;
+    @DeleteMapping("{id}")
+    public String delete(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long id) {
+        teamService.delete(userPrincipal.getUser(), id);
+        return "redirect:/teams";
     }
 }

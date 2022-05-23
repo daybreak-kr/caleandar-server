@@ -21,8 +21,12 @@
             </th>
             <td class="align-middle" th:text="${team.name}">name</td>
             <td class="align-middle" th:text="${team.leader.name}">leader</td>
-            <td>
-                <a th:href="@{|/teams/${team.id}/edit|}" class="btn btn-warning">수정</a>
+            <td class="d-flex">
+                <a th:href="@{|/teams/${team.id}/edit|}" class="btn btn-warning me-1">수정</a>
+                <form th:action="@{|teams/${team.id}|}" th:method="delete">
+                    <input type="hidden" name="_method" value="delete" />
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
             </td>
         </tr>
         </tbody>
