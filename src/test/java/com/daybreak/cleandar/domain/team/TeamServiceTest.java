@@ -132,4 +132,18 @@ class TeamServiceTest {
         Assertions.assertEquals(newName, updateTeam.getName());
         Assertions.assertEquals(request.getLeader().getId(), updateTeam.getLeader().getId());
     }
+
+    @Test
+    @Transactional
+    @DisplayName("delete team")
+    void delete() {
+        TeamDto.Request request = TeamDto.Request.builder().name(team.getName()).leader(leader).build();
+        Team team = teamService.create(request);
+
+        Team deleteTeam = teamService.delete(leader, team.getId());
+
+        Assertions.assertNotNull(deleteTeam);
+        Assertions.assertFalse(teamRepository.findById(team.getId()).isPresent());
+        Assertions.assertEquals(0, teamUserRepository.findByTeam(team).size());
+    }
 }

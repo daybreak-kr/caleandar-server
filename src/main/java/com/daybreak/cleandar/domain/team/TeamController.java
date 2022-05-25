@@ -45,33 +45,6 @@ public class TeamController {
         return mav;
     }
 
-    @PostMapping
-    public ModelAndView create(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute TeamDto.Request request) {
-        ModelAndView mav = new ModelAndView("teams/index");
-        request.setLeader(userPrincipal.getUser());
-        Optional<Team> team = Optional.ofNullable(teamService.create(request));
-        if (team.isPresent()) {
-            mav.addObject("team", new TeamDto.Response(team.get()));
-            mav.setStatus(HttpStatus.CREATED);
-        } else {
-            mav.setStatus(HttpStatus.BAD_REQUEST);
-        }
-        return mav;
-    }
-
-    @PutMapping("{id}")
-    public ModelAndView update(@ModelAttribute TeamDto.Request request) {
-        ModelAndView mav = new ModelAndView("teams/show");
-        Team team = teamService.update(request);
-        if (team == null) {
-            mav.setStatus(HttpStatus.BAD_REQUEST);
-        } else {
-            mav.addObject("team", team);
-            mav.setStatus(HttpStatus.OK);
-        }
-        return mav;
-    }
-
     @GetMapping("{id}/edit")
     public ModelAndView teamEditForm(@PathVariable Long id) {
         ModelAndView mav = new ModelAndView("teams/edit");
@@ -83,5 +56,32 @@ public class TeamController {
             mav.setStatus(HttpStatus.OK);
         }
         return mav;
+    }
+
+    @PostMapping
+    public String create(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute TeamDto.Request request) {
+        request.setLeader(userPrincipal.getUser());
+        Optional<Team> team = Optional.ofNullable(teamService.create(request));
+        if (team.isPresent()) {
+            return "redirect:teams";
+        } else {
+            return "redirect:new";
+        }
+    }
+
+    @PutMapping("{id}")
+    public String update(@ModelAttribute TeamDto.Request request) {
+        Team team = teamService.update(request);
+        if (team == null) {
+            return "redirect:edit";
+        } else {
+            return "redirect:" + team.getId();
+        }
+    }
+
+    @DeleteMapping("{id}")
+    public String delete(@AuthenticationPrincipal UserPrincipal userPrincipal, @PathVariable Long id) {
+        teamService.delete(userPrincipal.getUser(), id);
+        return "redirect:/teams";
     }
 }

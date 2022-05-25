@@ -47,4 +47,22 @@ public class TeamService {
             return null;
         }
     }
+
+    public Team delete(User leader, Long id) {
+        try {
+            Team team = teamRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not Found Entity"));
+            if (!team.getLeader().getId().equals(leader.getId())) {
+                throw new IllegalArgumentException("is not leader");
+            }
+
+            List<TeamUser> teamUsers = teamUserRepository.findByTeam(team);
+            teamUserRepository.deleteAll(teamUsers);
+            teamRepository.delete(team);
+
+            return team;
+        } catch (IllegalArgumentException exception) {
+            System.out.println("error - " + exception.getMessage());
+            return null;
+        }
+    }
 }

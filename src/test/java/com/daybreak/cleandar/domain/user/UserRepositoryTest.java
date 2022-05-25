@@ -62,7 +62,7 @@ class UserRepositoryTest {
     void findByTeamUser() {
 
         User newUser = userRepository.save(userBuilder.withId(2L).withEmail("example22@example.com").build());
-        Team team = teamRepository.save(teamBuilder.build());
+        Team team = teamRepository.save(teamBuilder.build(example));
 
         List<TeamUser> teamUsers = new ArrayList<>();
         teamUsers.add(teamUserBuilder.withTeamAndUser(team, example).build());

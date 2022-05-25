@@ -67,7 +67,7 @@ public class ScheduleRepositoryTest {
         User newUser = userRepository.save(userBuilder.withId(2L).withEmail("example22@example.com").build());
         scheduleRepository.save(scheduleBuilder.withStartAndEnd(start, end).withUser(newUser).build());
 
-        Team team = teamRepository.save(teamBuilder.build());
+        Team team = teamRepository.save(teamBuilder.build(user));
 
         //create teamUsers
         List<TeamUser> teamUsers = new ArrayList<>();
