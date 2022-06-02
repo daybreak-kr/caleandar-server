@@ -36,7 +36,7 @@ public class UserController {
     //TODO 검색 엔진 구현
     @GetMapping("users/search")
     @ResponseBody
-    public List<User> getUsers(@RequestParam String word){
+    public List<UserDto.Response> getUsers(@RequestParam String word) {
         return userService.searchByWord(word);
     }
 

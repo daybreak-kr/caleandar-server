@@ -10,5 +10,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByTeamUserIn(List<TeamUser> teamUsers);
 
-    List<User> findAllByNameLike(String word);
+    List<User> findAllByNameStartingWithOrEmailStartingWith(String word, String sameWord);
 }

@@ -60,7 +60,7 @@ public class TeamController {
     }
 
     @GetMapping("{id}/invite")
-    public ModelAndView inviteForm(@PathVariable Long id){
+    public ModelAndView inviteForm(@PathVariable Long id) {
         ModelAndView mav = new ModelAndView("teams/invite");
         Team team = teamService.show(id);
         mav.addObject("id", team.getId());
@@ -80,7 +80,7 @@ public class TeamController {
 
     //TODO 초대 구현
     @PostMapping("{id}/invite")
-    public String invite(@PathVariable Long id){ //, List<TeamUser> teamUsers
+    public String invite(@PathVariable Long id) { //, List<TeamUser> teamUsers
 //        teamService.invite(teamUsers);
         return "redirect:teams";
     }
