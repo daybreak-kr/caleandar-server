@@ -3,9 +3,9 @@ package com.daybreak.cleandar.domain.user;
 import com.daybreak.cleandar.security.UserPrincipalDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,6 +31,13 @@ public class UserController {
         } else {
             return "redirect:users/new";
         }
+    }
+
+    //TODO 검색 엔진 구현
+    @GetMapping("users/search")
+    @ResponseBody
+    public List<User> getUsers(@RequestParam String word){
+        return userService.searchByWord(word);
     }
 
     // TODO 미사용 코드

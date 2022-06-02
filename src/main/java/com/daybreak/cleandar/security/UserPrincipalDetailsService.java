@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserPrincipalDetailsService implements UserDetailsService {
@@ -33,4 +35,7 @@ public class UserPrincipalDetailsService implements UserDetailsService {
         return new UserPrincipal(user);
     }
 
+    public List<User> searchByWord(String word) {
+        return userRepository.findAllByNameLike(word);
+    }
 }

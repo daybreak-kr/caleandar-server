@@ -1,5 +1,6 @@
 package com.daybreak.cleandar.domain.team;
 
+import com.daybreak.cleandar.domain.teamuser.TeamUser;
 import com.daybreak.cleandar.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,6 +59,14 @@ public class TeamController {
         return mav;
     }
 
+    @GetMapping("{id}/invite")
+    public ModelAndView inviteForm(@PathVariable Long id){
+        ModelAndView mav = new ModelAndView("teams/invite");
+        Team team = teamService.show(id);
+        mav.addObject("id", team.getId());
+        return mav;
+    }
+
     @PostMapping
     public String create(@AuthenticationPrincipal UserPrincipal userPrincipal, @ModelAttribute TeamDto.Request request) {
         request.setLeader(userPrincipal.getUser());
@@ -67,6 +76,13 @@ public class TeamController {
         } else {
             return "redirect:new";
         }
+    }
+
+    //TODO 초대 구현
+    @PostMapping("{id}/invite")
+    public String invite(@PathVariable Long id){ //, List<TeamUser> teamUsers
+//        teamService.invite(teamUsers);
+        return "redirect:teams";
     }
 
     @PutMapping("{id}")
