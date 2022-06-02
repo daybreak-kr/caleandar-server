@@ -73,4 +73,15 @@ class UserRepositoryTest {
 
         Assertions.assertEquals(2, users.size());
     }
+
+    @Test
+    @DisplayName("유저 이름 및 이메일 검색")
+    void findAllByNameOrEmail() {
+        User newUser = userRepository.save(userBuilder.withId(2L).withName("ebs").withEmail("example22@example.com").build());
+        User newUser2 = userRepository.save(userBuilder.withId(2L).withName("kim").withEmail("example33@example.com").build());
+
+        List<User> users = userRepository.findAllByNameStartingWithOrEmailStartingWith("e", "e");
+
+        Assertions.assertEquals(3, users.size());
+    }
 }

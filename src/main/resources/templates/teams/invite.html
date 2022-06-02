@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymelef.org"
+      layout:decorate="~{layouts/layout.html}">
+<body>
+<div class="col-md-4 col-sm-12 my-3 mx-auto" layout:fragment="content">
+    <div class="card p-3">
+        <b>
+            <span> 사용자 이름 또는 이메일 주소로 검색하세요.</span>
+        </b>
+            <div class="auto-search-group">
+                <div class="form-floating mb-3">
+                    <input class="form-control" type="text" placeholder="Search" id="searchMember">
+                    <label for="searchMember">name or full email address</label>
+                </div>
+            </div>
+        <form method="POST" th:action="@{|/teams/${id}/invite|}">
+            <button class="w-100 btn btn-lg btn-primary" type="submit">팀 생성</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

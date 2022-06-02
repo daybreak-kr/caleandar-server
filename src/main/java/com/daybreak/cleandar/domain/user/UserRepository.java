@@ -9,4 +9,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findUserByEmail(String email);
 
     List<User> findByTeamUserIn(List<TeamUser> teamUsers);
+
+    List<User> findAllByNameStartingWithOrEmailStartingWith(String word, String sameWord);
 }

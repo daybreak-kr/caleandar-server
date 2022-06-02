@@ -27,10 +27,13 @@ public class TeamUser {
     @JoinColumn(name = "users_id")
     private User user;
 
+    private String status;
+
     @Builder
     public TeamUser(Team team, User user) {
         this.team = team;
         this.user = user;
+        this.status = "wait";
         this.team.getTeamUsers().add(this);
     }
 }

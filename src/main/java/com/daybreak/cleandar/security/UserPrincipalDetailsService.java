@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserPrincipalDetailsService implements UserDetailsService {
@@ -33,4 +36,11 @@ public class UserPrincipalDetailsService implements UserDetailsService {
         return new UserPrincipal(user);
     }
 
+    public List<UserDto.Response> searchByWord(String word) {
+        ArrayList<UserDto.Response> users = new ArrayList<>();
+        for (User user : userRepository.findAllByNameStartingWithOrEmailStartingWith(word, word)) {
+            users.add(new UserDto.Response(user));
+        }
+        return users;
+    }
 }
