@@ -1,11 +1,13 @@
 package com.daybreak.cleandar.domain.team;
 
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
+import com.daybreak.cleandar.domain.user.UserDto;
 import com.daybreak.cleandar.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -78,10 +80,10 @@ public class TeamController {
         }
     }
 
-    //TODO 초대 구현
+    //TODO 초대 실패시 처리
     @PostMapping("{id}/invite")
-    public String invite(@PathVariable Long id) { //, List<TeamUser> teamUsers
-//        teamService.invite(teamUsers);
+    public String invite(@PathVariable Long id, List<UserDto.Response> users) {
+        teamService.invite(id, users);
         return "redirect:teams";
     }
 

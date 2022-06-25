@@ -6,6 +6,7 @@ import com.daybreak.cleandar.builder.UserBuilder;
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
 import com.daybreak.cleandar.domain.teamuser.TeamUserRepository;
 import com.daybreak.cleandar.domain.user.User;
+import com.daybreak.cleandar.domain.user.UserDto;
 import com.daybreak.cleandar.domain.user.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,5 +146,25 @@ class TeamServiceTest {
         Assertions.assertNotNull(deleteTeam);
         Assertions.assertFalse(teamRepository.findById(team.getId()).isPresent());
         Assertions.assertEquals(0, teamUserRepository.findByTeam(team).size());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName(("invite members"))
+    void invite() {
+        TeamDto.Request request = TeamDto.Request.builder().name(team.getName()).leader(leader).build();
+        Team team = teamService.create(request);
+
+        List<UserDto.Response> users = new ArrayList<>();
+        users.add(new UserDto.Response(userRepository.save(userBuilder
+                .withId(2L)
+                .withName("kim")
+                .withEmail("test1@test.com").build())));
+        users.add(new UserDto.Response(userRepository.save(userBuilder
+                .withId(2L).withName("lee").withEmail("test2@test.com").build())));
+        teamService.invite(team.getId(), users);
+
+        Assertions.assertEquals(2, teamUserRepository.findTeamUserByStatusAndTeam("wait", team).size());
+
     }
 }

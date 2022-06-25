@@ -8,9 +8,15 @@ public class TeamUserBuilder {
     private Long id = 1L;
     private Team team;
     private User user;
+    private String status = "wait";
 
     public TeamUserBuilder withId(Long id) {
         this.id = id;
+        return this;
+    }
+
+    public TeamUserBuilder withStatus(String status) {
+        this.status = status;
         return this;
     }
 
