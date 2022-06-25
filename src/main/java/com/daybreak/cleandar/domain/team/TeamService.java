@@ -3,6 +3,8 @@ package com.daybreak.cleandar.domain.team;
 import com.daybreak.cleandar.domain.teamuser.TeamUser;
 import com.daybreak.cleandar.domain.teamuser.TeamUserRepository;
 import com.daybreak.cleandar.domain.user.User;
+import com.daybreak.cleandar.domain.user.UserDto;
+import com.daybreak.cleandar.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final TeamUserRepository teamUserRepository;
+    private final UserRepository userRepository;
 
     public List<Team> index(User user) {
         return teamUserRepository.findTeamUserByUser(user).stream().map(TeamUser::getTeam).collect(Collectors.toList());
@@ -31,7 +34,7 @@ public class TeamService {
     public Team create(@RequestBody TeamDto.Request request) {
         try {
             Team team = teamRepository.save(Team.builder().name(request.getName()).leader(request.getLeader()).build());
-            teamUserRepository.save(TeamUser.builder().team(team).user(request.getLeader()).build());
+            teamUserRepository.save(TeamUser.builder().team(team).user(request.getLeader()).status("join").build());
             return team;
         } catch (DataIntegrityViolationException exception) {
             return null;
@@ -66,8 +69,17 @@ public class TeamService {
         }
     }
 
-    //TODO 초대 로직 작성
-    public void invite() { //List<TeamUser> teamUsers
+    public Team invite(Long id, List<UserDto.Response> users) {
+        try {
+            Team team = teamRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not Found Entity"));
+            for (UserDto.Response user : users) {
+                User member = userRepository.findUserByEmail(user.getEmail());
+                teamUserRepository.save(TeamUser.builder().team(team).user(member).status("wait").build());
+            }
+            return team;
 
+        } catch (IllegalArgumentException exception) {
+            return null;
+        }
     }
 }

@@ -30,10 +30,10 @@ public class TeamUser {
     private String status;
 
     @Builder
-    public TeamUser(Team team, User user) {
+    public TeamUser(Team team, User user, String status) {
         this.team = team;
         this.user = user;
-        this.status = "wait";
+        this.status = status;
         this.team.getTeamUsers().add(this);
     }
 }
